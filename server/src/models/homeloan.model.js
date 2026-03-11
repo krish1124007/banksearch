@@ -11,7 +11,7 @@ const HomeLoanSchema = new mongoose.Schema({
         required: true,
         default: false
     },
-    read: {
+    ready_possession: {
         type: Boolean,
         required: true,
         default: false

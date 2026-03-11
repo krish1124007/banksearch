@@ -421,6 +421,38 @@ const BankDetail = () => {
               </h3>
               {renderInterestRates(bank.mortgage_loan.interest_rate)}
               {renderLoanDetails(bank.mortgage_loan)}
+              
+              {bank.policy.self_employed.dod && (
+                <motion.div
+                  className="mt-6 p-4 bg-amber-50 rounded-xl border border-amber-200 shadow-sm"
+                  whileHover={{ scale: 1.02 }}
+                >
+                  <div className="flex items-center gap-2 mb-3">
+                    <span className="text-xl">💰</span>
+                    <h4 className="font-bold text-amber-800">DOD Details</h4>
+                  </div>
+                  <div className="space-y-2 text-sm">
+                    {bank.policy.self_employed.dod_details?.renewal_charges && (
+                       <p className="flex justify-between border-b border-amber-100 pb-1">
+                         <span className="text-gray-600">Renewal Charges:</span>
+                         <span className="font-semibold text-amber-700">
+                           {bank.policy.self_employed.dod_details.renewal_charges_type === 'amount' ? '₹' : ''}
+                           {bank.policy.self_employed.dod_details.renewal_charges_value}
+                           {bank.policy.self_employed.dod_details.renewal_charges_type === 'percentage' ? '%' : ''}
+                         </span>
+                       </p>
+                    )}
+                    <p className="flex justify-between border-b border-amber-100 pb-1">
+                      <span className="text-gray-600">Utilization Ratio:</span>
+                      <span className="font-semibold text-amber-700">{bank.policy.self_employed.dod_details?.utilization_ratio_quarterly}%</span>
+                    </p>
+                    <p className="flex justify-between border-b border-amber-100 pb-1">
+                      <span className="text-gray-600">Turnover Ratio:</span>
+                      <span className="font-semibold text-amber-700">{bank.policy.self_employed.dod_details?.turnover_ratio_applicable ? 'Applicable' : 'Not Applicable'}</span>
+                    </p>
+                  </div>
+                </motion.div>
+              )}
             </>
           ) : (
             <p className="text-gray-500 italic">Not available</p>
@@ -618,21 +650,45 @@ const BankDetail = () => {
 
             <motion.div
               className="bg-white p-4 rounded-lg shadow-sm border border-gray-200 md:col-span-2"
-              whileHover={{ scale: 1.02 }}
+              whileHover={{ scale: 1.01 }}
             >
-              <h3 className="font-semibold text-gray-800 mb-2">Additional Charges</h3>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <p>
-                    <span className="font-medium">Extra Work:</span>{" "}
-                    {bank.extra_work > 0 ? `${bank.extra_work}%` : "N/A"}
-                  </p>
+              <h3 className="font-semibold text-gray-800 mb-2 flex items-center gap-2">
+                <span>➕</span> Additional Info & Funding
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Extra Work */}
+                <div className="bg-blue-50/50 p-3 rounded-xl border border-blue-100">
+                  <p className="font-bold text-blue-800 text-sm mb-2 uppercase tracking-tight">Extra Work</p>
+                  <p className="text-2xl font-bold text-blue-700">{bank.extra_work > 0 ? `${bank.extra_work}%` : "No"}</p>
+                  {bank.extra_work > 0 && (bank.extra_work_disbursement?.length > 0 || typeof bank.extra_work_disbursement === 'string') && (
+                    <div className="mt-2 pt-2 border-t border-blue-200">
+                      <p className="text-[10px] text-blue-600 font-bold uppercase mb-1">Disbursement To:</p>
+                      <div className="flex flex-wrap gap-1">
+                        {(Array.isArray(bank.extra_work_disbursement) ? bank.extra_work_disbursement : [bank.extra_work_disbursement]).map(item => (
+                          <span key={item} className="bg-blue-600 text-white text-[10px] px-2 py-0.5 rounded-full capitalize">
+                            {item?.replace(/_/g, ' ')}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
-                <div>
-                  <p>
-                    <span className="font-medium">Parallel Funding:</span>{" "}
-                    {bank.parallel_funding > 0 ? `${bank.parallel_funding}%` : "N/A"}
-                  </p>
+
+                {/* Parallel Funding */}
+                <div className="bg-indigo-50/50 p-3 rounded-xl border border-indigo-100">
+                  <p className="font-bold text-indigo-800 text-sm mb-2 uppercase tracking-tight">Parallel Funding</p>
+                  <div className="flex items-center gap-3">
+                    <div className={`w-3 h-3 rounded-full ${bank.parallel_funding?.enabled ? 'bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.5)]' : 'bg-red-400'}`}></div>
+                    <span className="text-xl font-bold text-indigo-700">
+                      {bank.parallel_funding?.enabled ? 'Enabled' : 'Not Allowed'}
+                    </span>
+                  </div>
+                  {bank.parallel_funding?.enabled && (
+                    <div className="mt-2 pt-2 border-t border-indigo-200">
+                      <p className="text-[10px] text-indigo-600 font-bold uppercase mb-1">Max Funding Stage:</p>
+                      <p className="text-lg font-bold text-indigo-600">{bank.parallel_funding.stage_percentage}% <span className="text-xs font-normal">of project</span></p>
+                    </div>
+                  )}
                 </div>
               </div>
             </motion.div>
@@ -658,6 +714,99 @@ const BankDetail = () => {
                   <span className="ml-1">{value ? "Yes" : "No"}</span>
                 </motion.div>
               ))}
+          </div>
+
+          {/* Detailed Surrogate & Policy Info */}
+          <div className="mt-6 space-y-4">
+            {/* Banking Surrogate */}
+            {bank.policy.self_employed.banking_surrogate && (
+              <motion.div className="bg-blue-50 p-4 rounded-xl border border-blue-200 shadow-sm" whileHover={{ scale: 1.01 }}>
+                <h4 className="font-bold text-blue-800 mb-2 flex items-center gap-2">
+                  <span>🏦</span> Banking Surrogate Details
+                </h4>
+                <div className="grid grid-cols-2 gap-4 text-xs sm:text-sm">
+                  <p><span className="text-gray-600">Period:</span> <span className="font-semibold capitalize text-blue-700">{bank.policy.self_employed.banking_surrogate_details?.period?.replace('_', ' ')}</span></p>
+                  <p><span className="text-gray-600">FOIR of ABB:</span> <span className="font-semibold text-blue-700">{bank.policy.self_employed.banking_surrogate_details?.foir_of_abb}%</span></p>
+                  <p className="col-span-2"><span className="text-gray-600">Banking Dates:</span> <span className="font-semibold text-blue-700">{bank.policy.self_employed.banking_surrogate_details?.dates}</span></p>
+                  <p><span className="text-gray-600">Max Club Account:</span> <span className="font-semibold text-blue-700">{bank.policy.self_employed.banking_surrogate_details?.max_club_account}</span></p>
+                </div>
+              </motion.div>
+            )}
+
+            {/* GST Surrogate */}
+            {bank.policy.self_employed.gst_surrogate && (
+              <motion.div className="bg-green-50 p-4 rounded-xl border border-green-200 shadow-sm" whileHover={{ scale: 1.01 }}>
+                <h4 className="font-bold text-green-800 mb-2 flex items-center gap-2">
+                  <span>📄</span> GST Surrogate Details
+                </h4>
+                <p className="text-sm"><span className="text-gray-600">GST Surrogate Ratio:</span> <span className="font-semibold text-green-700 text-lg">{bank.policy.self_employed.gst_surrogate_ratio}%</span></p>
+              </motion.div>
+            )}
+
+            {/* Other Surrogates and Ratios */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {bank.policy.self_employed.rtr_surrogate && (
+                <div className="bg-orange-50 p-3 rounded-lg border border-orange-200">
+                  <p className="text-xs text-orange-800 font-bold uppercase mb-1">RTR Surrogate</p>
+                  <p className="text-lg font-bold text-orange-700">{bank.policy.self_employed.rtr_surrogate_ratio}% <span className="text-xs font-normal">Ratio</span></p>
+                </div>
+              )}
+              {bank.policy.self_employed.industry_margin_surrogate && (
+                <div className="bg-teal-50 p-3 rounded-lg border border-teal-200">
+                  <p className="text-xs text-teal-800 font-bold uppercase mb-1">Industry Margin</p>
+                  <p className="text-lg font-bold text-teal-700">{bank.policy.self_employed.industry_margin_surrogate_ratio}% <span className="text-xs font-normal">Ratio</span></p>
+                </div>
+              )}
+              {bank.policy.self_employed.gross_profit_surrogate && (
+                <div className="bg-indigo-50 p-3 rounded-lg border border-indigo-200">
+                  <p className="text-xs text-indigo-800 font-bold uppercase mb-1">Gross Profit</p>
+                  <p className="text-lg font-bold text-indigo-700">{bank.policy.self_employed.gross_profit_surrogate_ratio}% <span className="text-xs font-normal">Ratio</span></p>
+                </div>
+              )}
+              {bank.policy.self_employed.low_ltv && (
+                <div className="bg-sky-50 p-3 rounded-lg border border-sky-200">
+                  <p className="text-xs text-sky-800 font-bold uppercase mb-1">Low LTV Prog.</p>
+                  <p className="text-sm font-bold text-sky-700">Ratio: {bank.policy.self_employed.low_ltv_ratio}%</p>
+                  <p className="text-sm font-bold text-sky-700">Max: ₹{bank.policy.self_employed.low_ltv_max_amount?.toLocaleString()}</p>
+                </div>
+              )}
+            </div>
+
+            {/* LIP Details */}
+            {bank.policy.self_employed.lip && (
+              <motion.div className="bg-purple-50 p-4 rounded-xl border border-purple-200 shadow-sm" whileHover={{ scale: 1.01 }}>
+                <h4 className="font-bold text-purple-800 mb-2">LIP (Loan Insurance Policy) Details</h4>
+                <div className="flex gap-6 text-sm">
+                   <p><span className="text-gray-600">Max Multiple:</span> <span className="font-semibold text-purple-700 text-lg">{bank.policy.self_employed.lip_details?.max_multiple}x</span></p>
+                   <p><span className="text-gray-600">LIP FOIR:</span> <span className="font-semibold text-purple-700 text-lg">{bank.policy.self_employed.lip_details?.foir}%</span></p>
+                </div>
+              </motion.div>
+            )}
+
+            {/* SE FOIR Slabs */}
+            {bank.policy.self_employed.foir && bank.policy.self_employed.se_foir_slabs?.length > 0 && (
+              <div className="bg-amber-50 p-4 rounded-xl border border-amber-200 shadow-sm">
+                <h4 className="font-bold text-amber-800 mb-3 flex items-center gap-2">
+                  <span>📊</span> Self-Employed FOIR Slabs
+                </h4>
+                <div className="grid grid-cols-2 gap-3">
+                  {bank.policy.self_employed.se_foir_slabs.map((slab, i) => (
+                    <div key={i} className="bg-white p-2 rounded border border-amber-100 text-xs">
+                      <p className="font-bold text-amber-700 border-b border-amber-50 mb-1">Income: {slab.income_range}K</p>
+                      <div className="flex justify-between">
+                        <span>Gross: <b>{slab.foir_gross}%</b></span>
+                        <span>Net: <b>{slab.foir_net}%</b></span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm grid grid-cols-2 gap-4 text-sm">
+                <p><span className="text-gray-600">ITR Required:</span> <span className="font-semibold capitalize text-indigo-700">{bank.policy.self_employed.itr_required?.replace('_', ' ')}</span></p>
+                <p><span className="text-gray-600">BCP Age:</span> <span className="font-semibold text-indigo-700">{bank.policy.self_employed.bcp_years} years</span></p>
+            </div>
           </div>
           {(bank.policy.self_employed.not_selected_text_1 || bank.policy.self_employed.not_selected_text_2) && (
             <div className="mt-4 bg-yellow-50 border-l-4 border-yellow-400 p-4">

@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createBank, deleteAllBanks, deleteBank, getAllBanks, searchBank, updateBank } from "../controllers/bank/bank.controller.js";
+import { createBank, deleteAllBanks, deleteBank, getAllBanks, searchBank, updateBank, superSearchBank } from "../controllers/bank/bank.controller.js";
 
 
 const router = Router();
@@ -10,5 +10,6 @@ router.route('/searchbank').post(searchBank)
 router.route('/deleteallbanks').post(deleteAllBanks)
 router.route('/updatebank').post(updateBank)
 router.route('/deletebank').post(deleteBank)
+router.route('/supersearch').post(superSearchBank)
 
 export const bank_router = router;

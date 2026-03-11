@@ -115,10 +115,19 @@ const BankSchema = new mongoose.Schema({
         required: true,
         default: 0
     },
+    // Extra work disbursement - customer account or 3rd party account
+    extra_work_disbursement: {
+        type: [String],
+        enum: ['customer_account', '3rd_party_account'],
+        default: []
+    },
     parallel_funding: {
-        type: Number,
-        required: true,
-        default: 0
+        enabled: { type: Boolean, default: false },
+        stage_percentage: { type: Number, default: 0 }
+    },
+    margin_money: {
+        required: { type: Boolean, default: false },
+        ratio: { type: Number, default: 0 } // in %
     },
     dod:{
         type:Number,

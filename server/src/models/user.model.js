@@ -4,11 +4,11 @@ import mongoose from "mongoose"
 const userSchema = new mongoose.Schema({
   name:{
      type:String,
-      required:true
+      required:false
   },
   contact_number:{
     type:String,
-    required:true
+    required:false
   },
   search_objects:[String]
 }) 

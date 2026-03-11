@@ -52,8 +52,7 @@ const loanSubOptionsMap = {
 };
 
 const SearchBank = () => {
-  const [name, setName] = useState("");
-  const [mobile, setMobile] = useState("");
+  // Removed name and mobile states
   const [loanType, setLoanType] = useState("home_loan");
   const [loanSubOption, setLoanSubOption] = useState("");
   const [insuranceType, setInsuranceType] = useState("");
@@ -136,6 +135,9 @@ const SearchBank = () => {
     lip: false,
     lowLtv: false,
     foir: false,
+    foir_slabs_income_range: "",
+    foir_slabs_foir_gross: "",
+    foir_slabs_foir_net: "",
     combo: false,
   });
   const [policyCibil, setPolicyCibil] = useState({
@@ -341,6 +343,21 @@ const SearchBank = () => {
     if (policySelfEmployed.foir) {
       payload["policy.self_employed.foir"] = true;
     }
+    if (policySelfEmployed.foir_slabs_income_range) {
+      payload["policy.self_employed.se_foir_slabs.0.income_range"] = {
+        $lte: parseFloat(policySelfEmployed.foir_slabs_income_range),
+      };
+    }
+    if (policySelfEmployed.foir_slabs_foir_gross) {
+      payload["policy.self_employed.se_foir_slabs.0.foir_gross"] = {
+        $lte: parseFloat(policySelfEmployed.foir_slabs_foir_gross),
+      };
+    }
+    if (policySelfEmployed.foir_slabs_foir_net) {
+      payload["policy.self_employed.se_foir_slabs.0.foir_net"] = {
+        $lte: parseFloat(policySelfEmployed.foir_slabs_foir_net),
+      };
+    }
     if (policySelfEmployed.combo) {
       payload["policy.self_employed.combo"] = true;
     }
@@ -425,8 +442,6 @@ const SearchBank = () => {
     }
     try {
       const saveData = {
-        name: name,
-        contact_number: mobile,
         search_objects: bankData,
       };
       const saveResponse = await axios.post(
@@ -472,44 +487,26 @@ const SearchBank = () => {
               Back
             </button>
             <h2 className="text-3xl font-bold text-blue-800">Search Bank</h2>
+            <div className="absolute right-0 top-1/2 transform -translate-y-1/2">
+              <button
+                onClick={() => navigate("/super-search")}
+                className="flex items-center bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-4 py-2 rounded-lg shadow-md hover:shadow-lg transition-all hover:scale-105 active:scale-95"
+              >
+                <div className="mr-2 bg-white/20 p-1 rounded">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                  </svg>
+                </div>
+                Super Search
+              </button>
+            </div>
             <p className="mt-2 text-blue-600">
               Find the best loan options with advanced filtering
             </p>
           </div>
 
           <div className="space-y-8">
-            <div className="bg-blue-50 p-6 rounded-lg border border-blue-100">
-              <h3 className="text-lg font-semibold text-blue-800 mb-4">
-                Personal Details
-              </h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <label className="block text-sm font-medium text-blue-700 mb-1">
-                    Name <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    className="block w-full px-4 py-2 border border-blue-200 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-blue-700 mb-1">
-                    Mobile Number <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    className="block w-full px-4 py-2 border border-blue-200 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                    value={mobile}
-                    onChange={(e) => setMobile(e.target.value)}
-                    required
-                    maxLength="10"
-                  />
-                </div>
-              </div>
-            </div>
+            {/* Personal Details section removed per user request */}
 
             {/* Loan Type Section */}
             <div className="bg-blue-50 p-6 rounded-lg border border-blue-100">
@@ -1412,6 +1409,48 @@ const SearchBank = () => {
                       />
                       <span className="ml-2">Combo</span>
                     </label>
+
+                    <div className="mt-2 pt-2 border-t border-blue-200">
+                      <label className="block text-sm font-medium text-blue-700 mb-1">
+                        FOIR Price Slabs:
+                      </label>
+                      <input
+                        type="number"
+                        placeholder="Income Range"
+                        className="block w-full px-3 py-2 border border-blue-200 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm mb-2"
+                        value={policySelfEmployed.foir_slabs_income_range}
+                        onChange={(e) =>
+                          setPolicySelfEmployed((prev) => ({
+                            ...prev,
+                            foir_slabs_income_range: e.target.value,
+                          }))
+                        }
+                      />
+                      <input
+                        type="number"
+                        placeholder="FOIR Gross"
+                        className="block w-full px-3 py-2 border border-blue-200 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm mb-2"
+                        value={policySelfEmployed.foir_slabs_foir_gross}
+                        onChange={(e) =>
+                          setPolicySelfEmployed((prev) => ({
+                            ...prev,
+                            foir_slabs_foir_gross: e.target.value,
+                          }))
+                        }
+                      />
+                      <input
+                        type="number"
+                        placeholder="FOIR Net"
+                        className="block w-full px-3 py-2 border border-blue-200 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm"
+                        value={policySelfEmployed.foir_slabs_foir_net}
+                        onChange={(e) =>
+                          setPolicySelfEmployed((prev) => ({
+                            ...prev,
+                            foir_slabs_foir_net: e.target.value,
+                          }))
+                        }
+                      />
+                    </div>
                   </div>
                 </div>
 

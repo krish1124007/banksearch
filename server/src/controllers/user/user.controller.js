@@ -6,29 +6,22 @@ import { asyncHandler } from "../../utils/asynchandler.js";
 
 const saveUserInforamtion = asyncHandler(async(req,res)=>{
   const {name , contact_number ,search_objects } = req.body;
-  if(!name && !contact_number)
-  {
-    return res.status(400)
-    .json(
-      new ApiResponse(400,"please enter the username and password",{success:false , data:"usernameAndPasswordNullError"})
-    )
+
+  let user;
+  if (name && contact_number) {
+    user = await User.findOne({ name, contact_number });
   }
 
-  const isUserExist =  await User.findOne({name , contact_number});
-
-  if(isUserExist)
-  {
+  if (user) {
     const parsedObject = JSON.stringify(req.body.search_objects[0]);
-  
-    isUserExist.search_objects.push(parsedObject);
-    isUserExist.save();
-    return res.status(200)
-    .json(
-      new ApiResponse(200,"user object update successfully",{success:true , data:"userupdates"})
-    )
+    user.search_objects.push(parsedObject);
+    await user.save();
+    return res.status(200).json(
+      new ApiResponse(200, "user object update successfully", { success: true, data: "userupdates" })
+    );
   }
 
-  const userInfoSave = await User.create({name , contact_number});
+  const userInfoSave = await User.create({ name, contact_number });
   if(search_objects && search_objects.length > 0)
   {
     const parsedObject = JSON.stringify(req.body.search_objects[0]);

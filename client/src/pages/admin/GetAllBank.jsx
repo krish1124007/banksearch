@@ -30,6 +30,14 @@ const GetAllBank = () => {
   };
 
   const deleteBank = async (bankId) => {
+    const password = window.prompt("Enter password to delete this bank:");
+    if (password === null) return; // User cancelled
+
+    if (password !== "Prince2211") {
+      toast.error("Incorrect password. You are not allowed to delete this bank.");
+      return;
+    }
+
     if (window.confirm("Are you sure you want to delete this bank?")) {
       try {
         const response = await axios.post(
@@ -50,7 +58,15 @@ const GetAllBank = () => {
   };
 
   const deleteAllBanks = async () => {
-    if (window.confirm("Are you sure you want to delete ALL banks?")) {
+    const password = window.prompt("Enter password to delete ALL banks:");
+    if (password === null) return; // User cancelled
+
+    if (password !== "Prince2211") {
+      toast.error("Incorrect password. You are not allowed to delete all banks.");
+      return;
+    }
+
+    if (window.confirm("Are you sure you want to delete ALL banks? This action cannot be undone.")) {
       try {
         const response = await axios.post(
           `${BACKENDDOMAIN}/api/v1/bank/deleteallbanks`

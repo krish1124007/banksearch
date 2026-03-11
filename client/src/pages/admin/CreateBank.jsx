@@ -28,7 +28,7 @@ const getInitialFormData = () => ({
   home_loan: {
     home_loan: false,
     under_construction: false,
-    read: false,
+    ready_possession: false,
     resale: false,
     balance_transfer: false,
     balance_transfer_and_topup: false,
@@ -152,7 +152,15 @@ const getInitialFormData = () => ({
   legal_charges: 0,
   valuation_charges: 0,
   extra_work: 0,
-  parallel_funding: 0,
+  extra_work_disbursement: [],
+  parallel_funding: {
+    enabled: false,
+    stage_percentage: 0
+  },
+  margin_money: {
+    required: false,
+    ratio: 0
+  },
   policy: {
     salaried: {
       foir_slabs: [{ income_range: 0, foir_gross: 0, foir_net: 0 }],
@@ -179,14 +187,24 @@ const getInitialFormData = () => ({
     },
     self_employed: {
       banking_surrogate: false,
+      banking_surrogate_details: { dates: '', period: '6_month', foir_of_abb: 0, max_club_account: 0 },
       gst_surrogate: false,
       rtr_surrogate: false,
       industry_margin_surrogate: false,
       gross_profit_surrogate: false,
       lip: false,
+      lip_details: { max_multiple: 0, foir: 0 },
       low_ltv: false,
+      low_ltv_ratio: 0,
       foir: false,
+      se_foir_slabs: [{ income_range: '', foir_gross: '', foir_net: '' }],
       combo: false,
+      abb_required: false,
+      abb_ratio: 0,
+      dod: false,
+      dod_details: { renewal_charges: false, renewal_charges_value: 0, renewal_charges_type: 'amount', utilization_ratio_quarterly: 0, turnover_ratio_applicable: false },
+      itr_required: '2_year',
+      bcp_years: 0,
       not_selected_text_1: "",
       not_selected_text_2: ""
     },
@@ -287,6 +305,20 @@ const CreateBank = () => {
     }));
   };
 
+  const handleDodChange = (field, value, isNested = false, nestedField = null) => {
+    setFormData(prev => {
+      const newPolicy = { ...prev.policy };
+      const newSe = { ...newPolicy.self_employed };
+      if (isNested) {
+        newSe[field] = { ...newSe[field], [nestedField]: value };
+      } else {
+        newSe[field] = value;
+      }
+      newPolicy.self_employed = newSe;
+      return { ...prev, policy: newPolicy };
+    });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -301,7 +333,6 @@ const CreateBank = () => {
     formData.legal_charges= Number(formData.legal_charges) || 0
     formData.valuation_charges= Number(formData.valuation_charges) || 0
     formData.extra_work= Number(formData.extra_work) || 0
-    formData.parallel_funding=Number(formData.parallel_funding) || 0
    formData.processing_fees= Number(formData.processing_fees) || 0
     formData.login_fees= {
         login_salaried: Number(formData.login_fees.login_salaried) || 0,
@@ -605,8 +636,104 @@ const CreateBank = () => {
                   <MortgageLoan
                     onChange={(data) => handleChange("mortgage_loan", data)}
                     initialData={formData.mortgage_loan}
-
                   />
+
+                  {formData.mortgage_loan.mortgage_loan && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: 'auto' }}
+                      className="bg-white rounded-lg shadow-sm border border-amber-200 overflow-hidden p-6"
+                    >
+                      <h3 className="text-lg font-semibold text-amber-800 mb-4 flex items-center">
+                        <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        DOD (Demand Overdraft) Options
+                      </h3>
+                      
+                      <div className="space-y-4">
+                        <div className="flex items-center">
+                          <input
+                            type="checkbox"
+                            id="dod_enabled_mortgage"
+                            checked={formData.policy.self_employed.dod}
+                            onChange={(e) => handleDodChange('dod', e.target.checked)}
+                            className="h-4 w-4 text-amber-600 border-gray-300 rounded focus:ring-amber-500 mr-2"
+                          />
+                          <label htmlFor="dod_enabled_mortgage" className="text-sm font-medium text-gray-700">
+                            Enable DOD for this bank
+                          </label>
+                        </div>
+
+                        {formData.policy.self_employed.dod && (
+                          <div className="ml-6 space-y-6 pt-2 border-l-2 border-amber-100 pl-4">
+                            <div className="flex items-center">
+                              <input
+                                type="checkbox"
+                                id="renewal_charges_dod"
+                                checked={formData.policy.self_employed.dod_details.renewal_charges}
+                                onChange={(e) => handleDodChange('dod_details', e.target.checked, true, 'renewal_charges')}
+                                className="h-4 w-4 text-amber-600 border-gray-300 rounded focus:ring-amber-500 mr-2"
+                              />
+                              <label htmlFor="renewal_charges_dod" className="text-sm font-medium text-gray-700">
+                                Renewal Charges Applicable
+                              </label>
+                            </div>
+
+                            {formData.policy.self_employed.dod_details.renewal_charges && (
+                              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                  <label className="block text-xs font-medium text-gray-500 mb-1">Charge Type</label>
+                                  <select
+                                    value={formData.policy.self_employed.dod_details.renewal_charges_type}
+                                    onChange={(e) => handleDodChange('dod_details', e.target.value, true, 'renewal_charges_type')}
+                                    className="block w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-amber-500 focus:border-amber-500"
+                                  >
+                                    <option value="amount">Amount (₹)</option>
+                                    <option value="percentage">Percentage (%)</option>
+                                  </select>
+                                </div>
+                                <div>
+                                  <label className="block text-xs font-medium text-gray-500 mb-1">
+                                    {formData.policy.self_employed.dod_details.renewal_charges_type === 'amount' ? 'Amount' : 'Percentage'}
+                                  </label>
+                                  <CleanNumberInput
+                                    value={formData.policy.self_employed.dod_details.renewal_charges_value}
+                                    onChange={(val) => handleDodChange('dod_details', val, true, 'renewal_charges_value')}
+                                    className="block w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-amber-500 focus:border-amber-500"
+                                    placeholder="0"
+                                  />
+                                </div>
+                              </div>
+                            )}
+
+                            <div className="max-w-xs">
+                              <label className="block text-sm font-medium text-gray-700 mb-1">Utilization Ratio Quarterly (%)</label>
+                              <CleanNumberInput
+                                value={formData.policy.self_employed.dod_details.utilization_ratio_quarterly}
+                                onChange={(val) => handleDodChange('dod_details', val, true, 'utilization_ratio_quarterly')}
+                                className="block w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-amber-500 focus:border-amber-500"
+                                placeholder="%"
+                              />
+                            </div>
+
+                            <div className="flex items-center">
+                              <input
+                                type="checkbox"
+                                id="turnover_ratio_applicable"
+                                checked={formData.policy.self_employed.dod_details.turnover_ratio_applicable}
+                                onChange={(e) => handleDodChange('dod_details', e.target.checked, true, 'turnover_ratio_applicable')}
+                                className="h-4 w-4 text-amber-600 border-gray-300 rounded focus:ring-amber-500 mr-2"
+                              />
+                              <label htmlFor="turnover_ratio_applicable" className="text-sm font-medium text-gray-700">
+                                Turnover Ratio Applicable
+                              </label>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </motion.div>
+                  )}
                   <CommercialLoan
                     onChange={(data) => handleChange("commercial_loan", data)}
                     initialData={formData.commercial_loan}
@@ -819,7 +946,6 @@ const CreateBank = () => {
                       {[
                         { name: "legal_charges", label: "Legal Charges (₹)", required: true },
                         { name: "valuation_charges", label: "Valuation Charges (₹)", required: true },
-                        { name: "parallel_funding", label: "Parallel Funding (₹)", required: true },
                         { name: "processing_fees", label: "Processing Fees (₹)", required: true }
                       ].map((field, index) => (
                         <motion.div
@@ -934,6 +1060,93 @@ const CreateBank = () => {
                           />
                         )}
                       </motion.div>
+                    </div>
+
+                    {/* Extra Work Disbursement Tab */}
+                    {showChargeInputs.extra_work && (
+                      <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                        <label className="block text-sm font-semibold text-blue-800 mb-3">
+                          Extra Work Disbursement — Customer Account or 3rd Party Account
+                        </label>
+                        <div className="flex flex-wrap gap-4">
+                          {[
+                            { val: 'customer_account', label: 'Customer Account' },
+                            { val: '3rd_party_account', label: '3rd Party Account' }
+                          ].map(option => (
+                            <label key={option.val} className={`flex items-center space-x-2 cursor-pointer px-4 py-3 rounded-lg border-2 transition-all ${(formData.extra_work_disbursement || []).includes(option.val) ? 'bg-blue-100 border-blue-500 text-blue-800' : 'bg-white border-gray-200 hover:border-blue-300'}`}>
+                              <input
+                                type="checkbox"
+                                checked={(formData.extra_work_disbursement || []).includes(option.val)}
+                                onChange={(e) => {
+                                  const current = formData.extra_work_disbursement || [];
+                                  const newValue = e.target.checked 
+                                    ? [...current, option.val] 
+                                    : current.filter(val => val !== option.val);
+                                  setFormData(prev => ({ ...prev, extra_work_disbursement: newValue }));
+                                }}
+                                className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
+                              />
+                              <span className="text-sm font-medium">{option.label}</span>
+                            </label>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Parallel Funding - yes/no + stage % */}
+                    <div className="mb-6 p-4 bg-gray-50 border border-gray-200 rounded-lg">
+                      <div className="flex items-center mb-3">
+                        <input
+                          type="checkbox"
+                          id="parallel_funding_enabled"
+                          checked={formData.parallel_funding.enabled}
+                          onChange={(e) => setFormData(prev => ({ ...prev, parallel_funding: { ...prev.parallel_funding, enabled: e.target.checked, stage_percentage: e.target.checked ? prev.parallel_funding.stage_percentage : 0 } }))}
+                          className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 mr-2"
+                        />
+                        <label htmlFor="parallel_funding_enabled" className="text-sm font-semibold text-gray-700">Parallel Funding</label>
+                      </div>
+                      {formData.parallel_funding.enabled && (
+                        <div className="max-w-xs ml-6">
+                          <label className="block text-sm text-gray-600 mb-1">Stage (%)</label>
+                          <div className="relative">
+                            <CleanNumberInput
+                              value={formData.parallel_funding.stage_percentage}
+                              onChange={(val) => setFormData(prev => ({ ...prev, parallel_funding: { ...prev.parallel_funding, stage_percentage: val } }))}
+                              className="block w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all pr-8"
+                              placeholder="Stage %"
+                            />
+                            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 font-medium text-sm">%</span>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Margin Money */}
+                    <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg">
+                      <div className="flex items-center mb-3">
+                        <input
+                          type="checkbox"
+                          id="margin_money_required"
+                          checked={formData.margin_money.required}
+                          onChange={(e) => setFormData(prev => ({ ...prev, margin_money: { ...prev.margin_money, required: e.target.checked, ratio: e.target.checked ? prev.margin_money.ratio : 0 } }))}
+                          className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 mr-2"
+                        />
+                        <label htmlFor="margin_money_required" className="text-sm font-semibold text-gray-700">Margin Money Required</label>
+                      </div>
+                      {formData.margin_money.required && (
+                        <div className="max-w-xs ml-6">
+                          <label className="block text-sm text-gray-600 mb-1">Ratio (%)</label>
+                          <div className="relative">
+                            <CleanNumberInput
+                              value={formData.margin_money.ratio}
+                              onChange={(val) => setFormData(prev => ({ ...prev, margin_money: { ...prev.margin_money, ratio: val } }))}
+                              className="block w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all pr-8"
+                              placeholder="Ratio %"
+                            />
+                            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 font-medium text-sm">%</span>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </motion.div>

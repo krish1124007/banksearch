@@ -11,6 +11,7 @@ import GetAllBank from './pages/admin/GetAllBank';
 import UpdateBank from './pages/admin/UpdateBank';
 import GetUser from './pages/admin/GetUser';
 import UserDetail from './pages/admin/UserDetail';
+import SuperSearch from './pages/admin/SuperSearch';
 import ErrorBoundary from './components/admin/ErrorBoundry';
 
 const PrivateRoute = ({ children }) => {
@@ -55,6 +56,7 @@ const App = () => {
           {/* Other routes remain the same */}
           <Route path="/add-bank" element={<PrivateRoute><CreateBank/></PrivateRoute>} />
           <Route path="/search-bank" element={<PrivateRoute><SearchBank /></PrivateRoute>} />
+          <Route path="/super-search" element={<PrivateRoute><SuperSearch /></PrivateRoute>} />
           <Route path='/get-all-bank' element={<PrivateRoute><GetAllBank/></PrivateRoute>} />
           <Route path="/bank/:id" element={<PrivateRoute><BankDetail /></PrivateRoute>} />
           <Route path='/update-bank/:id' element={<PrivateRoute><ErrorBoundary><UpdateBank/></ErrorBoundary></PrivateRoute>} />

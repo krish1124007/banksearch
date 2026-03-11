@@ -38,17 +38,55 @@ const SalariedPolicySchema = new mongoose.Schema({
     }
 }, { _id: false });
 
+// Banking Surrogate Details Schema
+const BankingSurrogateDetailsSchema = new mongoose.Schema({
+    dates: { type: String }, // 6 numbers with comma e.g. "1,5,10,15,20,25"
+    period: { type: String, enum: ['6_month', '9_month', '1_year'], default: '6_month' },
+    foir_of_abb: { type: Number }, // in %
+    max_club_account: { type: Number } // in number
+}, { _id: false });
+
+// LIP Details Schema
+const LIPDetailsSchema = new mongoose.Schema({
+    max_multiple: { type: Number },
+    foir: { type: Number }
+}, { _id: false });
+
+// DOD Details Schema
+const DODDetailsSchema = new mongoose.Schema({
+    renewal_charges: { type: Boolean, default: false },
+    renewal_charges_value: { type: Number, default: 0 }, // Amount or %
+    renewal_charges_type: { type: String, enum: ['amount', 'percentage'], default: 'amount' },
+    utilization_ratio_quarterly: { type: Number }, // in %
+    turnover_ratio_applicable: { type: Boolean, default: false }
+}, { _id: false });
+
 // Self-Employed Policy Schema
 const SelfEmployedPolicySchema = new mongoose.Schema({
     banking_surrogate: { type: Boolean, default: false },
+    banking_surrogate_details: { type: BankingSurrogateDetailsSchema },
     gst_surrogate: { type: Boolean, default: false },
+    gst_surrogate_ratio: { type: Number, default: 0 },
     rtr_surrogate: { type: Boolean, default: false },
+    rtr_surrogate_ratio: { type: Number, default: 0 },
     industry_margin_surrogate: { type: Boolean, default: false },
+    industry_margin_surrogate_ratio: { type: Number, default: 0 },
     gross_profit_surrogate: { type: Boolean, default: false },
+    gross_profit_surrogate_ratio: { type: Number, default: 0 },
     lip: { type: Boolean, default: false },
+    lip_details: { type: LIPDetailsSchema },
     low_ltv: { type: Boolean, default: false },
+    low_ltv_ratio: { type: Number },
+    low_ltv_max_amount: { type: Number },
     foir: { type: Boolean, default: false },
+    se_foir_slabs: { type: [FOIRSlabSchema], default: [] },
     combo: { type: Boolean, default: false },
+    abb_required: { type: Boolean, default: false },
+    abb_ratio: { type: Number },
+    dod: { type: Boolean, default: false },
+    dod_details: { type: DODDetailsSchema },
+    itr_required: { type: String, enum: ['1_year', '2_year', '3_year'], default: '2_year' },
+    bcp_years: { type: Number }, // Business Continuity Proof - years old
     not_selected_text_1: { type: String },
     not_selected_text_2: { type: String }
 }, { _id: false });

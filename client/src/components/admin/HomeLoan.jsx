@@ -20,8 +20,7 @@ const HomeLoan = ({ onChange }) => {
 
   const [options, setOptions] = useState({
     under_construction: false,
-    ready_passion: false,
-    read: false,
+    ready_possession: false,
     resale: false,
     balance_transfer: false,
     balance_transfer_and_topup: false,
@@ -42,8 +41,7 @@ const HomeLoan = ({ onChange }) => {
 
   const labelMap = {
     "Under Construction": "under_construction",
-    "Ready Passion": "ready_passion",
-    "Read": "read",
+    "Ready Possession": "ready_possession",
     "Resale": "resale",
     "Balance Transfer": "balance_transfer",
     "Balance Transfer + Topup": "balance_transfer_and_topup",
@@ -57,7 +55,18 @@ const HomeLoan = ({ onChange }) => {
   const visaTypes = ['Student', 'Work', 'Tourist', 'Business', 'Permanent Resident', 'Other'];
 
   const resetHomeLoanState = () => {
-    setOptions(Object.fromEntries(Object.values(labelMap).map((_, k) => [Object.values(labelMap)[k], false])));
+    setOptions({
+      under_construction: false,
+      ready_possession: false,
+      resale: false,
+      balance_transfer: false,
+      balance_transfer_and_topup: false,
+      plot_purchase: false,
+      plot_plus_construction: false,
+      pg: false,
+      city_area: false,
+      old_age_property: false
+    });
     setInterest({
       salaried: { from: 0, to: 0, foir: 0 },
       non_salaried: { from: 0, to: 0, foir: 0 }
@@ -98,7 +107,7 @@ const HomeLoan = ({ onChange }) => {
     ([key, value]) =>
       value &&
       key !== 'under_construction' &&
-      key !== 'ready_passion'
+      key !== 'ready_possession'
   );
 
   // LTV Range Handlers
@@ -301,17 +310,20 @@ const HomeLoan = ({ onChange }) => {
                     </div>
                   </div>
                   <div>
-                    <label className="block text-sm text-gray-600 mb-1">FOIR</label>
-                    <CleanNumberInput
-                      value={interest.salaried.foir}
-                      onChange={(val) =>
-                        setInterest((prev) => ({
-                          ...prev,
-                          salaried: { ...prev.salaried, foir: val }
-                        }))
-                      }
-                      placeholder="FOIR"
-                    />
+                    <label className="block text-sm text-gray-600 mb-1">FOIR (%)</label>
+                    <div className="relative">
+                      <CleanNumberInput
+                        value={interest.salaried.foir}
+                        onChange={(val) =>
+                          setInterest((prev) => ({
+                            ...prev,
+                            salaried: { ...prev.salaried, foir: val }
+                          }))
+                        }
+                        placeholder="FOIR"
+                      />
+                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">%</span>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -349,17 +361,20 @@ const HomeLoan = ({ onChange }) => {
                     </div>
                   </div>
                   <div>
-                    <label className="block text-sm text-gray-600 mb-1">FOIR</label>
-                    <CleanNumberInput
-                      value={interest.non_salaried.foir}
-                      onChange={(val) =>
-                        setInterest((prev) => ({
-                          ...prev,
-                          non_salaried: { ...prev.non_salaried, foir: val }
-                        }))
-                      }
-                      placeholder="FOIR"
-                    />
+                    <label className="block text-sm text-gray-600 mb-1">FOIR (%)</label>
+                    <div className="relative">
+                      <CleanNumberInput
+                        value={interest.non_salaried.foir}
+                        onChange={(val) =>
+                          setInterest((prev) => ({
+                            ...prev,
+                            non_salaried: { ...prev.non_salaried, foir: val }
+                          }))
+                        }
+                        placeholder="FOIR"
+                      />
+                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">%</span>
+                    </div>
                   </div>
                 </div>
               </div>
