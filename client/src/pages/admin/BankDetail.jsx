@@ -110,12 +110,12 @@ const BankDetail = () => {
       />
       <div className="mt-4 text-base text-gray-700 space-y-1">
         <p>
-          <span className="font-medium">Salaried:</span> {rates.salaried?.from}% -{" "}
-          {rates.salaried?.to}% {rates.salaried?.foir && `(FOIR: ${rates.salaried.foir}%)`}
+          <span className="font-medium">Salaried:</span> {rates?.salaried?.from}% -{" "}
+          {rates?.salaried?.to}% {rates?.salaried?.foir && `(FOIR: ${rates.salaried.foir}%)`}
         </p>
         <p>
           <span className="font-medium">Non-Salaried:</span>{" "}
-          {rates.non_salaried?.from}% - {rates.non_salaried?.to}% {rates.non_salaried?.foir && `(FOIR: ${rates.non_salaried.foir}%)`}
+          {rates?.non_salaried?.from}% - {rates?.non_salaried?.to}% {rates?.non_salaried?.foir && `(FOIR: ${rates.non_salaried.foir}%)`}
         </p>
       </div>
     </div>
@@ -146,7 +146,7 @@ const BankDetail = () => {
           >
             <p className="font-medium text-gray-800">Loan Ticket Size</p>
             <p className="text-lg font-semibold text-blue-600">
-              ₹{loanTypeData.loan_ticket_size.from.toLocaleString()} - ₹{loanTypeData.loan_ticket_size.to.toLocaleString()}
+              ₹{(loanTypeData.loan_ticket_size.from || 0).toLocaleString()} - ₹{(loanTypeData.loan_ticket_size.to || 0).toLocaleString()}
             </p>
           </motion.div>
         )}
@@ -181,7 +181,7 @@ const BankDetail = () => {
   };
 
   const renderBooleansAsList = (data) => {
-    const filteredItems = Object.entries(data).filter(
+    const filteredItems = Object.entries(data || {}).filter(
       ([key, value]) => typeof value === "boolean" && value === true && key !== "_id" && key !== "__v"
     );
 
@@ -206,7 +206,7 @@ const BankDetail = () => {
   };
 
   const renderInsurance = (insurance) => {
-    const insuranceTypes = Object.entries(insurance).filter(
+    const insuranceTypes = Object.entries(insurance || {}).filter(
       ([key]) => key !== "_id" && key !== "__v"
     );
 
@@ -312,7 +312,7 @@ const BankDetail = () => {
             className="text-xl md:text-2xl font-light opacity-90 mb-6"
             whileHover={{ scale: 1.01 }}
           >
-            {bank.bank_details.bank_name}
+            {bank?.bank_details?.bank_name}
           </motion.p>
           <div className="flex justify-center gap-6">
             
@@ -359,22 +359,22 @@ const BankDetail = () => {
         />
         <StatCard
           title="Bank SM"
-          value={bank.bank_details.bank_sm_name || "N/A"}
+          value={bank?.bank_details?.bank_sm_name || "N/A"}
           color="blue"
         />
         <StatCard
           title="Bank ASM"
-          value={bank.bank_details.bank_rsm_name || "N/A"}
+          value={bank?.bank_details?.bank_rsm_name || "N/A"}
           color="green"
         />
         <StatCard
           title="SM Contact"
-          value={bank.bank_details.bank_sm_contact_number || "N/A"}
+          value={bank?.bank_details?.bank_sm_contact_number || "N/A"}
           color="indigo"
         />
         <StatCard
           title="ASM Contact"
-          value={bank.bank_details.bank_rsm_contact_number || "N/A"}
+          value={bank?.bank_details?.bank_rsm_contact_number || "N/A"}
           color="purple" />
       </motion.div>
 
@@ -390,16 +390,16 @@ const BankDetail = () => {
               </h3>
               {renderInterestRates(bank.home_loan.interest_rate)}
               {renderLoanDetails(bank.home_loan)}
-              {bank.home_loan.nir_home_loan?.visa_type && (
+              {bank?.home_loan?.nir_home_loan?.visa_type && (
                 <motion.div
                   className="mt-4 bg-white p-3 rounded-lg shadow-sm border border-gray-200"
                   whileHover={{ scale: 1.02 }}
                 >
                   <p className="font-medium text-gray-800">NRI Home Loan</p>
                   <p className="text-blue-600">
-                    Visa Type: {bank.home_loan.nir_home_loan.visa_type}
+                    Visa Type: {bank?.home_loan?.nir_home_loan?.visa_type || 'N/A'}
                   </p>
-                  {bank.home_loan.nir_home_loan.salary_in_dollar && (
+                  {bank?.home_loan?.nir_home_loan?.salary_in_dollar && (
                     <p className="text-sm text-gray-600 mt-1">Salary in USD</p>
                   )}
                 </motion.div>
@@ -422,7 +422,7 @@ const BankDetail = () => {
               {renderInterestRates(bank.mortgage_loan.interest_rate)}
               {renderLoanDetails(bank.mortgage_loan)}
               
-              {bank.policy.self_employed.dod && (
+              {bank?.policy?.self_employed?.dod && (
                 <motion.div
                   className="mt-6 p-4 bg-amber-50 rounded-xl border border-amber-200 shadow-sm"
                   whileHover={{ scale: 1.02 }}
@@ -432,23 +432,23 @@ const BankDetail = () => {
                     <h4 className="font-bold text-amber-800">DOD Details</h4>
                   </div>
                   <div className="space-y-2 text-sm">
-                    {bank.policy.self_employed.dod_details?.renewal_charges && (
+                    {bank?.policy?.self_employed?.dod_details?.renewal_charges && (
                        <p className="flex justify-between border-b border-amber-100 pb-1">
                          <span className="text-gray-600">Renewal Charges:</span>
                          <span className="font-semibold text-amber-700">
-                           {bank.policy.self_employed.dod_details.renewal_charges_type === 'amount' ? '₹' : ''}
-                           {bank.policy.self_employed.dod_details.renewal_charges_value}
-                           {bank.policy.self_employed.dod_details.renewal_charges_type === 'percentage' ? '%' : ''}
+                           {bank?.policy?.self_employed?.dod_details?.renewal_charges_type === 'amount' ? '₹' : ''}
+                           {bank?.policy?.self_employed?.dod_details?.renewal_charges_value || 0}
+                           {bank?.policy?.self_employed?.dod_details?.renewal_charges_type === 'percentage' ? '%' : ''}
                          </span>
                        </p>
                     )}
                     <p className="flex justify-between border-b border-amber-100 pb-1">
                       <span className="text-gray-600">Utilization Ratio:</span>
-                      <span className="font-semibold text-amber-700">{bank.policy.self_employed.dod_details?.utilization_ratio_quarterly}%</span>
+                      <span className="font-semibold text-amber-700">{bank?.policy?.self_employed?.dod_details?.utilization_ratio_quarterly}%</span>
                     </p>
                     <p className="flex justify-between border-b border-amber-100 pb-1">
                       <span className="text-gray-600">Turnover Ratio:</span>
-                      <span className="font-semibold text-amber-700">{bank.policy.self_employed.dod_details?.turnover_ratio_applicable ? 'Applicable' : 'Not Applicable'}</span>
+                      <span className="font-semibold text-amber-700">{bank?.policy?.self_employed?.dod_details?.turnover_ratio_applicable ? 'Applicable' : 'Not Applicable'}</span>
                     </p>
                   </div>
                 </motion.div>
@@ -540,9 +540,9 @@ const BankDetail = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-2xl font-bold text-blue-600">
-                    {bank.age?.salaried.min_age} - {bank.age?.salaried.max_age}
+                    {bank.age?.salaried?.min_age || "N/A"} - {bank.age?.salaried?.max_age || "N/A"}
                   </p>
-                  {bank.age?.salaried.extension_age_period > 0 && (
+                  {bank.age?.salaried?.extension_age_period > 0 && (
                     <p className="text-sm text-gray-600">
                       Extension: +{bank.age.salaried.extension_age_period} years
                     </p>
@@ -555,7 +555,7 @@ const BankDetail = () => {
               <h3 className="font-semibold text-gray-800 mb-2">Self-Employed</h3>
               <div className="flex items-center justify-between">
                 <p className="text-2xl font-bold text-indigo-600">
-                  {bank.age?.self_employed.min_age} - {bank.age?.self_employed.max_age}
+                  {bank.age?.self_employed?.min_age || "N/A"} - {bank.age?.self_employed?.max_age || "N/A"}
                 </p>
                 <div className="text-4xl">👨‍💻</div>
               </div>
@@ -571,25 +571,25 @@ const BankDetail = () => {
               <div>
                 <p className="text-sm text-gray-600">Minimum Score</p>
                 <p className="text-3xl font-bold text-purple-600">
-                  {bank.policy.cibil.min_score}
+                  {bank?.policy?.cibil?.min_score || "N/A"}
                 </p>
               </div>
               <div className="w-24 h-24 rounded-full border-8 border-purple-200 flex items-center justify-center">
                 <span className="text-2xl font-bold text-purple-600">
-                  {Math.min(Math.floor(bank.policy.cibil.min_score / 8.5), 100)}%
+                  {bank?.policy?.cibil?.min_score ? Math.min(Math.floor(bank.policy.cibil.min_score / 8.5), 100) : 0}%
                 </span>
               </div>
             </div>
             <div className="space-y-2">
               <p className="flex items-center">
-                <span className={`w-3 h-3 rounded-full mr-2 ${bank.policy.cibil.call_accepted ? 'bg-green-500' : 'bg-red-500'}`}></span>
-                <span>Call Accepted: {bank.policy.cibil.call_accepted ? "Yes" : "No"}</span>
+                <span className={`w-3 h-3 rounded-full mr-2 ${bank?.policy?.cibil?.call_accepted ? 'bg-green-500' : 'bg-red-500'}`}></span>
+                <span>Call Accepted: {bank?.policy?.cibil?.call_accepted ? "Yes" : "No"}</span>
               </p>
               <p className="flex items-center">
-                <span className={`w-3 h-3 rounded-full mr-2 ${bank.policy.cibil.current_bounce_accepted ? 'bg-green-500' : 'bg-red-500'}`}></span>
-                <span>Current Bounce Accepted: {bank.policy.cibil.current_bounce_accepted ? "Yes" : "No"}</span>
+                <span className={`w-3 h-3 rounded-full mr-2 ${bank?.policy?.cibil?.current_bounce_accepted ? 'bg-green-500' : 'bg-red-500'}`}></span>
+                <span>Current Bounce Accepted: {bank?.policy?.cibil?.current_bounce_accepted ? "Yes" : "No"}</span>
               </p>
-              {bank.policy.cibil.accepted_type.length > 0 && (
+              {bank?.policy?.cibil?.accepted_type?.length > 0 && (
                 <div className="mt-2">
                   <p className="text-sm font-medium text-gray-700">Accepted Types:</p>
                   <div className="flex flex-wrap gap-2 mt-1">
@@ -699,7 +699,7 @@ const BankDetail = () => {
         <SectionCard>
           <SectionTitle icon="👨‍💼" title="Self-Employed Policy" />
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {Object.entries(bank.policy.self_employed)
+            {Object.entries(bank?.policy?.self_employed || {})
               .filter(([k, v]) => typeof v === "boolean" && k !== "_id" && k !== "__v")
               .map(([key, value]) => (
                 <motion.div
@@ -719,7 +719,7 @@ const BankDetail = () => {
           {/* Detailed Surrogate & Policy Info */}
           <div className="mt-6 space-y-4">
             {/* Banking Surrogate */}
-            {bank.policy.self_employed.banking_surrogate && (
+            {bank?.policy?.self_employed?.banking_surrogate && (
               <motion.div className="bg-blue-50 p-4 rounded-xl border border-blue-200 shadow-sm" whileHover={{ scale: 1.01 }}>
                 <h4 className="font-bold text-blue-800 mb-2 flex items-center gap-2">
                   <span>🏦</span> Banking Surrogate Details
@@ -734,7 +734,7 @@ const BankDetail = () => {
             )}
 
             {/* GST Surrogate */}
-            {bank.policy.self_employed.gst_surrogate && (
+            {bank?.policy?.self_employed?.gst_surrogate && (
               <motion.div className="bg-green-50 p-4 rounded-xl border border-green-200 shadow-sm" whileHover={{ scale: 1.01 }}>
                 <h4 className="font-bold text-green-800 mb-2 flex items-center gap-2">
                   <span>📄</span> GST Surrogate Details
@@ -745,25 +745,25 @@ const BankDetail = () => {
 
             {/* Other Surrogates and Ratios */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {bank.policy.self_employed.rtr_surrogate && (
+              {bank?.policy?.self_employed?.rtr_surrogate && (
                 <div className="bg-orange-50 p-3 rounded-lg border border-orange-200">
                   <p className="text-xs text-orange-800 font-bold uppercase mb-1">RTR Surrogate</p>
                   <p className="text-lg font-bold text-orange-700">{bank.policy.self_employed.rtr_surrogate_ratio}% <span className="text-xs font-normal">Ratio</span></p>
                 </div>
               )}
-              {bank.policy.self_employed.industry_margin_surrogate && (
+              {bank?.policy?.self_employed?.industry_margin_surrogate && (
                 <div className="bg-teal-50 p-3 rounded-lg border border-teal-200">
                   <p className="text-xs text-teal-800 font-bold uppercase mb-1">Industry Margin</p>
                   <p className="text-lg font-bold text-teal-700">{bank.policy.self_employed.industry_margin_surrogate_ratio}% <span className="text-xs font-normal">Ratio</span></p>
                 </div>
               )}
-              {bank.policy.self_employed.gross_profit_surrogate && (
+              {bank?.policy?.self_employed?.gross_profit_surrogate && (
                 <div className="bg-indigo-50 p-3 rounded-lg border border-indigo-200">
                   <p className="text-xs text-indigo-800 font-bold uppercase mb-1">Gross Profit</p>
                   <p className="text-lg font-bold text-indigo-700">{bank.policy.self_employed.gross_profit_surrogate_ratio}% <span className="text-xs font-normal">Ratio</span></p>
                 </div>
               )}
-              {bank.policy.self_employed.low_ltv && (
+              {bank?.policy?.self_employed?.low_ltv && (
                 <div className="bg-sky-50 p-3 rounded-lg border border-sky-200">
                   <p className="text-xs text-sky-800 font-bold uppercase mb-1">Low LTV Prog.</p>
                   <p className="text-sm font-bold text-sky-700">Ratio: {bank.policy.self_employed.low_ltv_ratio}%</p>
@@ -773,7 +773,7 @@ const BankDetail = () => {
             </div>
 
             {/* LIP Details */}
-            {bank.policy.self_employed.lip && (
+            {bank?.policy?.self_employed?.lip && (
               <motion.div className="bg-purple-50 p-4 rounded-xl border border-purple-200 shadow-sm" whileHover={{ scale: 1.01 }}>
                 <h4 className="font-bold text-purple-800 mb-2">LIP (Loan Insurance Policy) Details</h4>
                 <div className="flex gap-6 text-sm">
@@ -784,7 +784,7 @@ const BankDetail = () => {
             )}
 
             {/* SE FOIR Slabs */}
-            {bank.policy.self_employed.foir && bank.policy.self_employed.se_foir_slabs?.length > 0 && (
+            {bank?.policy?.self_employed?.foir && bank.policy.self_employed.se_foir_slabs?.length > 0 && (
               <div className="bg-amber-50 p-4 rounded-xl border border-amber-200 shadow-sm">
                 <h4 className="font-bold text-amber-800 mb-3 flex items-center gap-2">
                   <span>📊</span> Self-Employed FOIR Slabs
@@ -804,11 +804,11 @@ const BankDetail = () => {
             )}
 
             <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm grid grid-cols-2 gap-4 text-sm">
-                <p><span className="text-gray-600">ITR Required:</span> <span className="font-semibold capitalize text-indigo-700">{bank.policy.self_employed.itr_required?.replace('_', ' ')}</span></p>
-                <p><span className="text-gray-600">BCP Age:</span> <span className="font-semibold text-indigo-700">{bank.policy.self_employed.bcp_years} years</span></p>
+                <p><span className="text-gray-600">ITR Required:</span> <span className="font-semibold capitalize text-indigo-700">{bank?.policy?.self_employed?.itr_required?.replace('_', ' ')}</span></p>
+                <p><span className="text-gray-600">BCP Age:</span> <span className="font-semibold text-indigo-700">{bank?.policy?.self_employed?.bcp_years} years</span></p>
             </div>
           </div>
-          {(bank.policy.self_employed.not_selected_text_1 || bank.policy.self_employed.not_selected_text_2) && (
+          {(bank?.policy?.self_employed?.not_selected_text_1 || bank?.policy?.self_employed?.not_selected_text_2) && (
             <div className="mt-4 bg-yellow-50 border-l-4 border-yellow-400 p-4">
               <div className="flex">
                 <div className="flex-shrink-0">
@@ -817,12 +817,12 @@ const BankDetail = () => {
                   </svg>
                 </div>
                 <div className="ml-3">
-                  {bank.policy.self_employed.not_selected_text_1 && (
+                  {bank?.policy?.self_employed?.not_selected_text_1 && (
                     <p className="text-sm text-yellow-700">
                       {bank.policy.self_employed.not_selected_text_1}
                     </p>
                   )}
-                  {bank.policy.self_employed.not_selected_text_2 && (
+                  {bank?.policy?.self_employed?.not_selected_text_2 && (
                     <p className="text-sm text-yellow-700 mt-1">
                       {bank.policy.self_employed.not_selected_text_2}
                     </p>
@@ -844,7 +844,7 @@ const BankDetail = () => {
               FOIR Slabs:
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {bank.policy.salaried.foir_slabs.length > 0 ? (
+              {bank?.policy?.salaried?.foir_slabs?.length > 0 ? (
                 bank.policy.salaried.foir_slabs.map((item, i) => (
                   <motion.div
                     key={i}
@@ -877,9 +877,9 @@ const BankDetail = () => {
               whileHover={{ scale: 1.02 }}
             >
               <h4 className="font-semibold text-gray-800 mb-3">Cash Salary</h4>
-              <div className={`w-full h-3 rounded-full ${bank.policy.salaried.cash_salary_accepted ? 'bg-green-500' : 'bg-red-500'}`}></div>
+              <div className={`w-full h-3 rounded-full ${bank?.policy?.salaried?.cash_salary_accepted ? 'bg-green-500' : 'bg-red-500'}`}></div>
               <p className="text-center mt-2 font-medium">
-                {bank.policy.salaried.cash_salary_accepted ? "Accepted" : "Not Accepted"}
+                {bank?.policy?.salaried?.cash_salary_accepted ? "Accepted" : "Not Accepted"}
               </p>
             </motion.div>
 
@@ -888,7 +888,7 @@ const BankDetail = () => {
               whileHover={{ scale: 1.02 }}
             >
               <h4 className="font-semibold text-gray-800 mb-3">Additional Income</h4>
-              {renderBooleansAsList(bank.policy.salaried.additional_income)}
+              {renderBooleansAsList(bank?.policy?.salaried?.additional_income)}
             </motion.div>
 
             <motion.div
@@ -896,7 +896,7 @@ const BankDetail = () => {
               whileHover={{ scale: 1.02 }}
             >
               <h4 className="font-semibold text-gray-800 mb-3">Company Type</h4>
-              {renderBooleansAsList(bank.policy.salaried.company_type)}
+              {renderBooleansAsList(bank?.policy?.salaried?.company_type)}
             </motion.div>
           </div>
 
@@ -905,13 +905,13 @@ const BankDetail = () => {
             whileHover={{ scale: 1.02 }}
           >
             <h4 className="font-semibold text-gray-800 mb-3">Deductions</h4>
-            {renderBooleansAsList(bank.policy.salaried.deduction)}
+            {renderBooleansAsList(bank?.policy?.salaried?.deduction)}
           </motion.div>
         </div>
       </SectionCard>
 
       {/* USP SECTION */}
-      {bank.policy.usp_description && (
+      {bank?.policy?.usp_description && (
         <SectionCard className="mt-8">
           <SectionTitle icon="🌟" title="Unique Selling Points" />
           <motion.div

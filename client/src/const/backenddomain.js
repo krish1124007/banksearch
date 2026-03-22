@@ -1,3 +1,3 @@
-const BACKENDDOMAIN = "https://localhost:8000"
+const BACKENDDOMAIN = "https://manage.zatpatloans.com"
 
 export {BACKENDDOMAIN}
