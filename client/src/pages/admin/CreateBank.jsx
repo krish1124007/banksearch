@@ -18,12 +18,12 @@ import { BACKENDDOMAIN } from "../../const/backenddomain";
 const getInitialFormData = () => ({
   bank_details: {
     bank_name: "",
-
     bank_sm_name: "",
     bank_sm_contact_number: "",
     bank_rsm_name: "",
     bank_rsm_contact_number: ""
   },
+  additional_notes: "",
   contact_number: "",
   home_loan: {
     home_loan: false,
@@ -610,6 +610,26 @@ const CreateBank = () => {
                         onChange={(e) => handleBankDetailsChange("bank_rsm_contact_number", e.target.value)}
                         className="block w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
                         placeholder="Enter RSM Contact Number"
+                      />
+                    </motion.div>
+
+                    {/* Additional Notes - full width */}
+                    <motion.div
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.7 }}
+                      className="md:col-span-2"
+                    >
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Additional Notes
+                        <span className="ml-2 text-xs text-gray-400 font-normal">(optional — any extra information about this bank)</span>
+                      </label>
+                      <textarea
+                        rows={5}
+                        value={formData.additional_notes}
+                        onChange={(e) => setFormData(prev => ({ ...prev, additional_notes: e.target.value }))}
+                        className="block w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all resize-y"
+                        placeholder="Enter any additional notes, special conditions, or remarks about this bank..."
                       />
                     </motion.div>
                   </div>

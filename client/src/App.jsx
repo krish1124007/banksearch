@@ -13,6 +13,7 @@ import GetUser from './pages/admin/GetUser';
 import UserDetail from './pages/admin/UserDetail';
 import SuperSearch from './pages/admin/SuperSearch';
 import ErrorBoundary from './components/admin/ErrorBoundry';
+import CaseStudy from './pages/admin/CaseStudy';
 
 const PrivateRoute = ({ children }) => {
   const { isLoggedIn, loading } = useAuth();
@@ -62,6 +63,7 @@ const App = () => {
           <Route path='/update-bank/:id' element={<PrivateRoute><ErrorBoundary><UpdateBank/></ErrorBoundary></PrivateRoute>} />
           <Route path='/get-users' element={<PrivateRoute><GetUser/></PrivateRoute>} />
           <Route path='/get-user/:id' element={<PrivateRoute><UserDetail/></PrivateRoute>} />
+          <Route path='/case-study' element={<PrivateRoute><CaseStudy/></PrivateRoute>} />
         </Routes>
         <ToastContainer />
       </Router>

@@ -2,25 +2,23 @@ import mongoose from "mongoose";
 
 // FOIR Slab Schema
 const FOIRSlabSchema = new mongoose.Schema({
-    income_range: { type: String, required: true }, // e.g., "Upto 30k"
-    foir_gross: { type: String, required: true },   // e.g., "40%"
-    foir_net: { type: String, required: true }      // e.g., "50%"
+    income_range: { type: String }, // e.g., "Upto 30k"
+    foir_gross: { type: String },   // e.g., "40%"
+    foir_net: { type: String }      // e.g., "50%"
 }, { _id: false });
 
 // Salaried Policy Schema
 const SalariedPolicySchema = new mongoose.Schema({
     foir_slabs: {
-        type: [FOIRSlabSchema],
-        required: true
+        type: [FOIRSlabSchema]
     },
     cash_salary_accepted: {
-        type: Boolean,
-        required: true
+        type: Boolean
     },
     additional_income: {
-        rent: { type: Boolean, required: true },
-        future_rental: { type: Boolean, required: true },
-        incentive: { type: Boolean, required: true }
+        rent: { type: Boolean },
+        future_rental: { type: Boolean },
+        incentive: { type: Boolean }
     },
     company_type: {
         MNC: { type: Boolean, default: false },
@@ -94,12 +92,10 @@ const SelfEmployedPolicySchema = new mongoose.Schema({
 // CIBIL Schema
 const CIBILSchema = new mongoose.Schema({
     min_score: {
-        type: Number,
-        required: true
+        type: Number
     },
     call_accepted: {
-        type: Boolean,
-        required: true
+        type: Boolean
     },
     accepted_type: {
         type: [String], // e.g., ["Old", "Recent"]
@@ -107,28 +103,23 @@ const CIBILSchema = new mongoose.Schema({
         default: []
     },
     current_bounce_accepted: {
-        type: Boolean,
-        required: true
+        type: Boolean
     }
 }, { _id: false });
 
 // Main Policy Schema
 const PolicySchema = new mongoose.Schema({
     salaried: {
-        type: SalariedPolicySchema,
-        required: true
+        type: SalariedPolicySchema
     },
     self_employed: {
-        type: SelfEmployedPolicySchema,
-        required: true
+        type: SelfEmployedPolicySchema
     },
     cibil: {
-        type: CIBILSchema,
-        required: true
+        type: CIBILSchema
     },
     usp_description: {
-        type: String,
-        required: false
+        type: String
     }
 });
 

@@ -2,31 +2,25 @@ import mongoose from "mongoose";
 
 const BankSchema = new mongoose.Schema({
     bank_details: {
-        bank_name:{
-            type:String,
-            required:true
-        },
-        
-        bank_sm_name: {
+        bank_name: {
             type: String,
             required: true
+        },
+        bank_sm_name: {
+            type: String
         },
         bank_sm_contact_number: {
-            type: String,
-            required: true
+            type: String
         },
         bank_rsm_name: {
-            type: String,
-            required: true
+            type: String
         },
         bank_rsm_contact_number: {
-            type: String,
-            required: true
+            type: String
         }
     },
-   
-    home_loan:
-    {
+
+    home_loan: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "HomeLone"
     },
@@ -42,24 +36,21 @@ const BankSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "IndustrialPurchase"
     },
-    construction_finance_loan:{
-        type:Boolean
+    construction_finance_loan: {
+        type: Boolean
     },
-    cgtmse_loan:{
-        type:Boolean
+    cgtmse_loan: {
+        type: Boolean
     },
-    machinary_loan:{
-        type:Boolean
+    machinary_loan: {
+        type: Boolean
     },
     login_fees: {
-        login_salaried:{
-            type:Number,
-            required:true
-
+        login_salaried: {
+            type: Number
         },
-        login_self_employed:{
-            type:Number,
-            required:true
+        login_self_employed: {
+            type: Number
         }
     },
     insurance: {
@@ -68,51 +59,41 @@ const BankSchema = new mongoose.Schema({
     },
     tenor_salaried: {
         to: {
-            type: Number,
-            required: true,
+            type: Number
         },
         from: {
-            type: Number,
-            required: true
+            type: Number
         }
     },
     tenor_self_employed: {
         to: {
-            type: Number,
-            required: true
+            type: Number
         },
         from: {
-            type: Number,
-            required: true
-
+            type: Number
         }
     },
     geo_limit: {
-        type: Number,
-        required: true
+        type: Number
     },
     age: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "AgeCriteria",
+        ref: "AgeCriteria"
     },
     legal_charges: {
         type: Number,
-        required: true,
         default: 0
     },
     processing_fees: {
         type: Number,
-        required: true,
         default: 0
     },
     valuation_charges: {
         type: Number,
-        required: true,
         default: 0
     },
     extra_work: {
         type: Number,
-        required: true,
         default: 0
     },
     // Extra work disbursement - customer account or 3rd party account
@@ -129,15 +110,18 @@ const BankSchema = new mongoose.Schema({
         required: { type: Boolean, default: false },
         ratio: { type: Number, default: 0 } // in %
     },
-    dod:{
-        type:Number,
-        default:0
+    dod: {
+        type: Number,
+        default: 0
     },
     policy: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Policy"
+    },
+    additional_notes: {
+        type: String,
+        default: ""
     }
-    
 })
 
 

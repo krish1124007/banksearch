@@ -286,7 +286,7 @@ const UpdateBank = () => {
     const getUpdatePayload = () => {
         const updateBodyObject = {};
         const outerobjectvalues = {};
-        const topKeys = ["processing_fees", "geo_limit", "legal_charges", "valuation_charges", "extra_work", "extra_work_disbursement"];
+        const topKeys = ["processing_fees", "geo_limit", "legal_charges", "valuation_charges", "extra_work", "extra_work_disbursement", "additional_notes"];
         const nestedKeys = ["tenor_salaried", "tenor_self_employed", "parallel_funding", "margin_money"];
         const sectionKeys = ["home_loan", "mortgage_loan", "commercial_loan", "industrial_loan", "insurance", "age", "policy"];
 
@@ -381,12 +381,26 @@ const UpdateBank = () => {
                         <form onSubmit={handleSubmit}>
 
                             {/* Bank Details */}
-                            <SectionDropdown title="🏦 Bank Details" sectionKey="bank_details" {...sd}>
+                                <SectionDropdown title="🏦 Bank Details" sectionKey="bank_details" {...sd}>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <Inp label="bank_sm_name" value={bankData.bank_details?.bank_sm_name} path="bank_details.bank_sm_name" onChange={handleChange} />
                                     <Inp label="bank_sm_contact_number" value={bankData.bank_details?.bank_sm_contact_number} path="bank_details.bank_sm_contact_number" onChange={handleChange} />
                                     <Inp label="bank_rsm_name" value={bankData.bank_details?.bank_rsm_name} path="bank_details.bank_rsm_name" onChange={handleChange} />
                                     <Inp label="bank_rsm_contact_number" value={bankData.bank_details?.bank_rsm_contact_number} path="bank_details.bank_rsm_contact_number" onChange={handleChange} />
+                                    {/* Additional Notes - full width */}
+                                    <div className="md:col-span-2">
+                                        <label className="block text-sm font-medium text-blue-700 mb-1">
+                                            Additional Notes
+                                            <span className="ml-2 text-xs text-gray-400 font-normal">(optional)</span>
+                                        </label>
+                                        <textarea
+                                            rows={5}
+                                            value={bankData.additional_notes || ""}
+                                            onChange={(e) => setBankData(prev => ({ ...prev, additional_notes: e.target.value }))}
+                                            className="block w-full rounded-md border border-blue-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm p-2 resize-y"
+                                            placeholder="Enter any additional notes, special conditions, or remarks..."
+                                        />
+                                    </div>
                                 </div>
                             </SectionDropdown>
 

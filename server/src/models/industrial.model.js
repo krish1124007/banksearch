@@ -1,64 +1,53 @@
 import mongoose from "mongoose";
 
 const IndustrialPurchaseSchema = new mongoose.Schema({
-    industrial_loan:{
-        type:Boolean,
-        default:false
+    industrial_loan: {
+        type: Boolean,
+        default: false
     },
     builder_purchase: {
         type: Boolean,
-        required: true,
         default: false
     },
     resale: {
         type: Boolean,
-        required: true,
         default: false
     },
     interest_rate: {
         salaried: {
             from: {
-                type: Number,
-                required: true
+                type: Number
             },
             to: {
-                type: Number,
-                required: true
+                type: Number
             },
-            foir:{
-                type:Number,
-                required:true
+            foir: {
+                type: Number
             }
         },
         non_salaried: {
             from: {
-                type: Number,
-                required: true
+                type: Number
             },
             to: {
-                type: Number,
-                required: true
+                type: Number
             },
-            foir:{
-                type:Number,
-                required:true
+            foir: {
+                type: Number
             }
         }
-
-
     },
-     LTV:{
-        type:String
-     }
-    ,
-    loan_ticket_size:{
-        to:{
-            type:Number,
-            default:0
+    LTV: {
+        type: String
+    },
+    loan_ticket_size: {
+        to: {
+            type: Number,
+            default: 0
         },
-        from:{
-            type:Number,
-            default:0
+        from: {
+            type: Number,
+            default: 0
         }
     }
 });
