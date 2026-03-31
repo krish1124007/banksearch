@@ -387,10 +387,10 @@ const UpdateBank = () => {
                                     <Inp label="bank_sm_contact_number" value={bankData.bank_details?.bank_sm_contact_number} path="bank_details.bank_sm_contact_number" onChange={handleChange} />
                                     <Inp label="bank_rsm_name" value={bankData.bank_details?.bank_rsm_name} path="bank_details.bank_rsm_name" onChange={handleChange} />
                                     <Inp label="bank_rsm_contact_number" value={bankData.bank_details?.bank_rsm_contact_number} path="bank_details.bank_rsm_contact_number" onChange={handleChange} />
-                                    {/* Additional Notes - full width */}
+                                    {/* One Pager - full width */}
                                     <div className="md:col-span-2">
                                         <label className="block text-sm font-medium text-blue-700 mb-1">
-                                            Additional Notes
+                                            One Pager
                                             <span className="ml-2 text-xs text-gray-400 font-normal">(optional)</span>
                                         </label>
                                         <textarea

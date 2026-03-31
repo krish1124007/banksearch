@@ -612,26 +612,6 @@ const CreateBank = () => {
                         placeholder="Enter RSM Contact Number"
                       />
                     </motion.div>
-
-                    {/* Additional Notes - full width */}
-                    <motion.div
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: 0.7 }}
-                      className="md:col-span-2"
-                    >
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Additional Notes
-                        <span className="ml-2 text-xs text-gray-400 font-normal">(optional — any extra information about this bank)</span>
-                      </label>
-                      <textarea
-                        rows={5}
-                        value={formData.additional_notes}
-                        onChange={(e) => setFormData(prev => ({ ...prev, additional_notes: e.target.value }))}
-                        className="block w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all resize-y"
-                        placeholder="Enter any additional notes, special conditions, or remarks about this bank..."
-                      />
-                    </motion.div>
                   </div>
                 </motion.div>
               )}
@@ -1180,11 +1160,39 @@ const CreateBank = () => {
                   initial="hidden"
                   animate="visible"
                   exit="exit"
+                  className="space-y-6"
                 >
                   <Policy
                     onChange={(data) => handleChange("policy", data)}
                     initialData={formData.policy}
                   />
+
+                  {/* One Pager - full width */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 15 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.2 }}
+                    className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden"
+                  >
+                    <div className="bg-gradient-to-r from-indigo-50 to-blue-50 px-6 py-4 border-b border-gray-200">
+                      <h3 className="text-lg font-semibold text-gray-800 flex items-center">
+                        <svg className="w-5 h-5 mr-2 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        One Pager
+                      </h3>
+                      <p className="text-sm text-gray-500 mt-1">Optional — add any extra notes, special conditions or remarks about this bank</p>
+                    </div>
+                    <div className="p-6">
+                      <textarea
+                        rows={8}
+                        value={formData.additional_notes}
+                        onChange={(e) => setFormData(prev => ({ ...prev, additional_notes: e.target.value }))}
+                        className="block w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all resize-y text-sm text-gray-700 placeholder-gray-400"
+                        placeholder="Enter any additional notes, special conditions, or remarks about this bank..."
+                      />
+                    </div>
+                  </motion.div>
                 </motion.div>
               )}
             </AnimatePresence>
