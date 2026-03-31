@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { createBank, deleteAllBanks, deleteBank, getAllBanks, searchBank, updateBank, superSearchBank } from "../controllers/bank/bank.controller.js";
-import { createCaseStudy, getAllCaseStudies, deleteCaseStudy } from "../controllers/bank/casestudy.controller.js";
+import { createCaseStudy, getAllCaseStudies, deleteCaseStudy, updateCaseStudy } from "../controllers/bank/casestudy.controller.js";
 
 
 const router = Router();
@@ -17,5 +17,6 @@ router.route('/supersearch').post(superSearchBank)
 router.route('/casestudy/create').post(createCaseStudy);
 router.route('/casestudy/all').get(getAllCaseStudies);
 router.route('/casestudy/delete').post(deleteCaseStudy);
+router.route('/casestudy/update').post(updateCaseStudy);
 
 export const bank_router = router;

@@ -57,4 +57,31 @@ const deleteCaseStudy = asyncHandler(async (req, res) => {
     );
 });
 
-export { createCaseStudy, getAllCaseStudies, deleteCaseStudy };
+// Update a case study
+const updateCaseStudy = asyncHandler(async (req, res) => {
+    const { id, title, description } = req.body;
+
+    if (!id) {
+        return res.status(400).json(
+            new ApiResponse(400, "ID is required", { success: false })
+        );
+    }
+
+    const updated = await CaseStudy.findByIdAndUpdate(
+        id,
+        { title, description },
+        { new: true, runValidators: true }
+    );
+
+    if (!updated) {
+        return res.status(404).json(
+            new ApiResponse(404, "Case study not found", { success: false })
+        );
+    }
+
+    return res.status(200).json(
+        new ApiResponse(200, "Case study updated successfully", { success: true, data: updated })
+    );
+});
+
+export { createCaseStudy, getAllCaseStudies, deleteCaseStudy, updateCaseStudy };

@@ -10,12 +10,17 @@ const CaseStudy = () => {
   const [caseStudies, setCaseStudies] = useState([]);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(false);
+
+  // Modal state — shared for create & edit
   const [showModal, setShowModal] = useState(false);
+  const [editTarget, setEditTarget] = useState(null); // null = create mode, object = edit mode
   const [form, setForm] = useState({ title: "", description: "" });
   const [submitting, setSubmitting] = useState(false);
+
   const [deletingId, setDeletingId] = useState(null);
   const [expandedId, setExpandedId] = useState(null);
 
+  // ─── Fetch ─────────────────────────────────────────────
   const fetchCaseStudies = useCallback(async (q = "") => {
     setLoading(true);
     try {
@@ -30,18 +35,36 @@ const CaseStudy = () => {
     }
   }, []);
 
-  useEffect(() => {
-    fetchCaseStudies();
-  }, [fetchCaseStudies]);
+  useEffect(() => { fetchCaseStudies(); }, [fetchCaseStudies]);
 
   // Debounced search
   useEffect(() => {
-    const timer = setTimeout(() => fetchCaseStudies(search), 350);
-    return () => clearTimeout(timer);
+    const t = setTimeout(() => fetchCaseStudies(search), 350);
+    return () => clearTimeout(t);
   }, [search, fetchCaseStudies]);
 
-  const handleCreate = async (e) => {
-    e.preventDefault();
+  // ─── Open modal helpers ────────────────────────────────
+  const openCreate = () => {
+    setEditTarget(null);
+    setForm({ title: "", description: "" });
+    setShowModal(true);
+  };
+
+  const openEdit = (cs) => {
+    setEditTarget(cs);
+    setForm({ title: cs.title, description: cs.description });
+    setExpandedId(null); // collapse card if open
+    setShowModal(true);
+  };
+
+  const closeModal = () => {
+    setShowModal(false);
+    setEditTarget(null);
+    setForm({ title: "", description: "" });
+  };
+
+  // ─── Create ────────────────────────────────────────────
+  const handleCreate = async () => {
     if (!form.title.trim() || !form.description.trim()) {
       toast.error("Both title and description are required.");
       return;
@@ -50,8 +73,7 @@ const CaseStudy = () => {
     try {
       await axios.post(`${BACKENDDOMAIN}/api/v1/bank/casestudy/create`, form);
       toast.success("Case study created!");
-      setShowModal(false);
-      setForm({ title: "", description: "" });
+      closeModal();
       fetchCaseStudies(search);
     } catch {
       toast.error("Failed to create case study.");
@@ -60,6 +82,37 @@ const CaseStudy = () => {
     }
   };
 
+  // ─── Update ────────────────────────────────────────────
+  const handleUpdate = async () => {
+    if (!form.title.trim() || !form.description.trim()) {
+      toast.error("Both title and description are required.");
+      return;
+    }
+    setSubmitting(true);
+    try {
+      const res = await axios.post(`${BACKENDDOMAIN}/api/v1/bank/casestudy/update`, {
+        id: editTarget._id,
+        ...form
+      });
+      const updated = res.data.data.data;
+      setCaseStudies(prev =>
+        prev.map(cs => cs._id === updated._id ? updated : cs)
+      );
+      toast.success("Case study updated!");
+      closeModal();
+    } catch {
+      toast.error("Failed to update case study.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    editTarget ? handleUpdate() : handleCreate();
+  };
+
+  // ─── Delete ────────────────────────────────────────────
   const handleDelete = async (id) => {
     if (!window.confirm("Delete this case study?")) return;
     setDeletingId(id);
@@ -74,13 +127,13 @@ const CaseStudy = () => {
     }
   };
 
-  const formatDate = (dateStr) => {
-    const d = new Date(dateStr);
-    return d.toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" });
-  };
+  const formatDate = (d) =>
+    new Date(d).toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" });
 
+  // ─── JSX ───────────────────────────────────────────────
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+
       {/* Header */}
       <div className="bg-gradient-to-r from-indigo-600 to-blue-600 shadow-lg">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-5 flex items-center justify-between">
@@ -103,7 +156,7 @@ const CaseStudy = () => {
           <motion.button
             whileHover={{ scale: 1.04 }}
             whileTap={{ scale: 0.97 }}
-            onClick={() => setShowModal(true)}
+            onClick={openCreate}
             className="flex items-center gap-2 px-4 py-2 bg-white text-indigo-700 rounded-xl text-sm font-semibold shadow-md hover:shadow-lg transition-all"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -115,12 +168,9 @@ const CaseStudy = () => {
       </div>
 
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
         {/* Search Bar */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="relative mb-8"
-        >
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="relative mb-8">
           <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
             <svg className="h-5 w-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -131,13 +181,10 @@ const CaseStudy = () => {
             value={search}
             onChange={e => setSearch(e.target.value)}
             placeholder="Search case studies by title..."
-            className="w-full pl-11 pr-4 py-3.5 bg-white border border-slate-200 rounded-2xl shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent text-slate-700 placeholder-slate-400 transition-all text-sm"
+            className="w-full pl-11 pr-10 py-3.5 bg-white border border-slate-200 rounded-2xl shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent text-slate-700 placeholder-slate-400 transition-all text-sm"
           />
           {search && (
-            <button
-              onClick={() => setSearch("")}
-              className="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-slate-600"
-            >
+            <button onClick={() => setSearch("")} className="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-slate-600">
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
@@ -145,24 +192,20 @@ const CaseStudy = () => {
           )}
         </motion.div>
 
-        {/* Stats bar */}
-        <div className="flex items-center justify-between mb-5">
+        {/* Stats */}
+        <div className="mb-5">
           <p className="text-sm text-slate-500 font-medium">
             {loading ? "Loading..." : `${caseStudies.length} case ${caseStudies.length === 1 ? "study" : "studies"} found`}
           </p>
         </div>
 
-        {/* Case Studies List */}
+        {/* List */}
         {loading ? (
-          <div className="flex justify-center items-center py-24">
+          <div className="flex justify-center py-24">
             <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-indigo-500" />
           </div>
         ) : caseStudies.length === 0 ? (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="flex flex-col items-center justify-center py-24 text-center"
-          >
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col items-center justify-center py-24 text-center">
             <div className="w-20 h-20 bg-indigo-50 rounded-full flex items-center justify-center mb-4">
               <svg className="w-10 h-10 text-indigo-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -203,17 +246,35 @@ const CaseStudy = () => {
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-2 flex-shrink-0 ml-2">
+                    {/* Action Buttons */}
+                    <div className="flex items-center gap-1.5 flex-shrink-0 ml-2">
+                      {/* View toggle */}
                       <button
                         onClick={() => setExpandedId(expandedId === cs._id ? null : cs._id)}
                         className="px-3 py-1.5 text-xs font-medium text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-lg transition-colors"
                       >
                         {expandedId === cs._id ? "Hide" : "View"}
                       </button>
+
+                      {/* Edit button */}
+                      <motion.button
+                        whileHover={{ scale: 1.08 }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={() => openEdit(cs)}
+                        className="p-1.5 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
+                        title="Edit"
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                        </svg>
+                      </motion.button>
+
+                      {/* Delete button */}
                       <button
                         onClick={() => handleDelete(cs._id)}
                         disabled={deletingId === cs._id}
                         className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-40"
+                        title="Delete"
                       >
                         {deletingId === cs._id ? (
                           <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
@@ -254,7 +315,7 @@ const CaseStudy = () => {
         )}
       </div>
 
-      {/* Create Modal */}
+      {/* Create / Edit Modal */}
       <AnimatePresence>
         {showModal && (
           <motion.div
@@ -262,7 +323,7 @@ const CaseStudy = () => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm"
-            onClick={(e) => { if (e.target === e.currentTarget) setShowModal(false); }}
+            onClick={(e) => { if (e.target === e.currentTarget) closeModal(); }}
           >
             <motion.div
               initial={{ scale: 0.92, opacity: 0, y: 20 }}
@@ -271,14 +332,18 @@ const CaseStudy = () => {
               transition={{ duration: 0.22 }}
               className="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden"
             >
-              {/* Modal Header */}
-              <div className="bg-gradient-to-r from-indigo-600 to-blue-600 px-6 py-5 flex items-center justify-between">
+              {/* Modal Header — colour changes by mode */}
+              <div className={`px-6 py-5 flex items-center justify-between ${editTarget ? "bg-gradient-to-r from-amber-500 to-orange-500" : "bg-gradient-to-r from-indigo-600 to-blue-600"}`}>
                 <div>
-                  <h2 className="text-lg font-bold text-white">Create Case Study</h2>
-                  <p className="text-blue-100 text-xs mt-0.5">Add a new case note with title and description</p>
+                  <h2 className="text-lg font-bold text-white">
+                    {editTarget ? "Edit Case Study" : "Create Case Study"}
+                  </h2>
+                  <p className="text-white/80 text-xs mt-0.5">
+                    {editTarget ? "Update the title or description below" : "Add a new case note with title and description"}
+                  </p>
                 </div>
                 <button
-                  onClick={() => setShowModal(false)}
+                  onClick={closeModal}
                   className="p-1.5 text-white/70 hover:text-white hover:bg-white/20 rounded-lg transition-colors"
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -288,7 +353,7 @@ const CaseStudy = () => {
               </div>
 
               {/* Modal Body */}
-              <form onSubmit={handleCreate} className="p-6 space-y-5">
+              <form onSubmit={handleSubmit} className="p-6 space-y-5">
                 <div>
                   <label className="block text-sm font-semibold text-slate-700 mb-1.5">
                     Title <span className="text-red-400">*</span>
@@ -318,7 +383,7 @@ const CaseStudy = () => {
                 <div className="flex gap-3 pt-1">
                   <button
                     type="button"
-                    onClick={() => setShowModal(false)}
+                    onClick={closeModal}
                     className="flex-1 py-2.5 border border-slate-200 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-50 transition-colors"
                   >
                     Cancel
@@ -327,7 +392,7 @@ const CaseStudy = () => {
                     type="submit"
                     disabled={submitting}
                     whileTap={{ scale: 0.97 }}
-                    className="flex-1 py-2.5 bg-gradient-to-r from-indigo-600 to-blue-600 rounded-xl text-sm font-semibold text-white shadow-md hover:shadow-lg disabled:opacity-60 transition-all flex items-center justify-center gap-2"
+                    className={`flex-1 py-2.5 rounded-xl text-sm font-semibold text-white shadow-md hover:shadow-lg disabled:opacity-60 transition-all flex items-center justify-center gap-2 ${editTarget ? "bg-gradient-to-r from-amber-500 to-orange-500" : "bg-gradient-to-r from-indigo-600 to-blue-600"}`}
                   >
                     {submitting ? (
                       <>
@@ -335,9 +400,9 @@ const CaseStudy = () => {
                           <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                           <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
                         </svg>
-                        Saving...
+                        {editTarget ? "Saving..." : "Creating..."}
                       </>
-                    ) : "Create Case Study"}
+                    ) : (editTarget ? "Save Changes" : "Create Case Study")}
                   </motion.button>
                 </div>
               </form>
