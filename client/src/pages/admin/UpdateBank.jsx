@@ -5,6 +5,40 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 import { BACKENDDOMAIN } from "../../const/backenddomain";
 
+const getInitialFormData = () => ({
+  bank_details: { bank_name: "", bank_sm_name: "", bank_sm_contact_number: "", bank_rsm_name: "", bank_rsm_contact_number: "" },
+  additional_notes: "", contact_number: "",
+  home_loan: { home_loan: false, under_construction: false, ready_possession: false, resale: false, balance_transfer: false, balance_transfer_and_topup: false, plot_purchase: false, plot_plus_construction: false, pg: false, city_area: false, old_age_property: false, nir_home_loan: { salary_in_dollar: false, visa_type: "" }, interest_rate: { salaried: { from: 0, to: 0, foir: 0 }, non_salaried: { from: 0, to: 0, foir: 0 } }, LTV: "", loan_ticket_size: { from: 0, to: 0 }, layout_plan: 0, unit_plan: 0 },
+  mortgage_loan: { mortgage_loan: false, residential_self_occupied: false, residential_rented: false, residential_vacant: false, commercial_self_occupied: false, commercial_rented: false, commercial_vacant: false, industrial_self_occupied: false, industrial_rented: false, industrial_vacant: false, plot_residential: false, plot_commercial: false, plot_industrial: false, godown_self_occupied: false, godown_rented: false, godown_vacant: false, warehouse_self_occupied: false, warehouse_rented: false, warehouse_vacant: false, school_self_occupied: false, school_rented: false, pg_self_occupied: false, pg_rented: false, pg_vacant: false, hospital_self_occupied: false, hospital_rented: false, interest_rate: { salaried: { from: 0, to: 0, foir: 0 }, non_salaried: { from: 0, to: 0, foir: 0 } }, LTV: "", loan_ticket_size: { from: 0, to: 0 } },
+  commercial_loan: { commercial_loan: false, under_construction: false, builder_purchase_ready: false, resale: false, interest_rate: { salaried: { from: 0, to: 0, foir: 0 }, non_salaried: { from: 0, to: 0, foir: 0 } }, LTV: "", loan_ticket_size: { from: 0, to: 0 } },
+  industrial_loan: { industrial_loan: false, builder_purchase: false, resale: false, interest_rate: { salaried: { from: 0, to: 0, foir: 0 }, non_salaried: { from: 0, to: 0, foir: 0 } }, LTV: "", loan_ticket_size: { from: 0, to: 0 } },
+  construction_finance_loan: false, cgtmse_loan: false, machinary_loan: false,
+  login_fees: { login_salaried: 0, login_self_employed: 0 },
+  processing_fees: 0,
+  insurance: { life_insurance: { mandatory: false, full: false, less_tensor: false, lumsum: false }, property_insurance: { mandatory: false, full: false, less_tensor: false, lumsum: false }, health_insurance: { mandatory: false, full: false, less_tensor: false, lumsum: false } },
+  tenor_salaried: { from: 0, to: 0 }, tenor_self_employed: { from: 0, to: 0 }, geo_limit: 0,
+  age: { salaried: { min_age: 0, max_age: 0, extension_age_period: 0 }, self_employed: { min_age: 0, max_age: 0 } },
+  legal_charges: 0, valuation_charges: 0, extra_work: 0, extra_work_disbursement: [],
+  parallel_funding: { enabled: false, stage_percentage: 0 }, margin_money: { required: false, ratio: 0 },
+  policy: { salaried: { foir_slabs: [{ income_range: 0, foir_gross: 0, foir_net: 0 }], cash_salary_accepted: false, additional_income: { rent: false, future_rental: false, incentive: false }, company_type: { MNC: false, Govt: false, PvtLtd: false, LLP: false, Partnership: false, Trust: false, Individual: false }, deduction: { PF: false, PT: false, no_deduction: false } }, self_employed: { banking_surrogate: false, banking_surrogate_details: { dates: '', period: '6_month', foir_of_abb: 0, max_club_account: 0 }, gst_surrogate: false, rtr_surrogate: false, industry_margin_surrogate: false, gross_profit_surrogate: false, lip: false, lip_details: { max_multiple: 0, foir: 0 }, low_ltv: false, low_ltv_ratio: 0, foir: false, se_foir_slabs: [{ income_range: '', foir_gross: '', foir_net: '' }], combo: false, abb_required: false, abb_ratio: 0, dod: false, dod_details: { renewal_charges: false, renewal_charges_value: 0, renewal_charges_type: 'amount', utilization_ratio_quarterly: 0, turnover_ratio_applicable: false }, itr_required: '2_year', bcp_years: 0, not_selected_text_1: "", not_selected_text_2: "" }, cibil: { min_score: 0, call_accepted: false, accepted_type: [], current_bounce_accepted: false }, usp_description: "" }
+});
+
+const mergeDefaults = (template, data) => {
+    if (!data) return template;
+    const result = { ...template };
+    for (const key in data) {
+        if (data[key] === null || data[key] === undefined) {
+            continue;
+        }
+        if (typeof data[key] === 'object' && !Array.isArray(data[key])) {
+            result[key] = mergeDefaults(template[key] || {}, data[key]);
+        } else {
+            result[key] = data[key];
+        }
+    }
+    return result;
+};
+
 // ⚠️ MUST be outside the component — if defined inside, React creates a new
 // component type on every render, causing unmount/remount → scroll jumps to top.
 const SectionDropdown = ({ title, sectionKey, expandedSections, toggleSection, children }) => (
@@ -209,13 +243,16 @@ const UpdateBank = () => {
 
     useEffect(() => {
         if (location.state?.bank) {
-            const data = JSON.parse(JSON.stringify(location.state.bank));
+            let data = JSON.parse(JSON.stringify(location.state.bank));
             // Normalize extra_work_disbursement to array if it's a string
             if (data.extra_work_disbursement && typeof data.extra_work_disbursement === 'string') {
                 data.extra_work_disbursement = [data.extra_work_disbursement];
             } else if (!data.extra_work_disbursement) {
                 data.extra_work_disbursement = [];
             }
+            
+            data = mergeDefaults(getInitialFormData(), data);
+            
             setBankData(data);
             setOriginalBankData(data);
         } else {
@@ -296,7 +333,10 @@ const UpdateBank = () => {
         for (const k of nestedKeys) if (!isEqual(bankData[k], originalBankData[k])) outerobjectvalues[k] = bankData[k];
 
         for (const key of sectionKeys) {
-            if (!bankData[key] || !originalBankData[key]) continue;
+            if (!bankData[key]) continue;
+            const currentData = bankData[key];
+            const originalData = originalBankData[key] || {};
+            
             const changed = {};
             const findChanges = (orig, curr, acc) => {
                 const allKeys = new Set([...Object.keys(orig || {}), ...Object.keys(curr || {})]);
@@ -310,10 +350,10 @@ const UpdateBank = () => {
                     } else if (!isEqual(cv, ov)) acc[p] = cv;
                 }
             };
-            findChanges(originalBankData[key], bankData[key], changed);
+            findChanges(originalData, currentData, changed);
             if (Object.keys(changed).length) {
                 const nameMap = { home_loan: 'HomeLoan', mortgage_loan: 'MortgageLoan', commercial_loan: 'CommercialPurchase', industrial_loan: 'IndustrialPurchase', insurance: 'Insurance', age: 'AgeCriteria', policy: 'Policy' };
-                updateBodyObject[nameMap[key]] = { id: originalBankData[key]._id, updateobject: changed };
+                updateBodyObject[nameMap[key]] = { id: originalData._id, updateobject: changed };
             }
         }
         return { bankId: id, updateBodyObject, outerobjectvalues };

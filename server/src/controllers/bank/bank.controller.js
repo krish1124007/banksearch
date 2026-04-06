@@ -321,12 +321,31 @@ for (const [key, value] of Object.entries(data)) {
 const updateBank = asyncHandler(async (req,res)=>{
   const {bankId , updateBodyObject, outerobjectvalues} = req.body;
 
+  const dbKeyMap = {
+    HomeLoan: 'home_loan',
+    MortgageLoan: 'mortgage_loan',
+    CommercialPurchase: 'commercial_loan',
+    IndustrialPurchase: 'industrial_loan',
+    Insurance: 'insurance',
+    AgeCriteria: 'age',
+    Policy: 'policy'
+  };
+
   for(const [key, value] of Object.entries(updateBodyObject)){
     let model = modesl[key];
-    const update_proccsing =  await model.findByIdAndUpdate(value.id, value.updateobject, { new: true });
+    if (value.id) {
+       await model.findByIdAndUpdate(value.id, value.updateobject, { new: true });
+    } else {
+       // if not created originally, create it now
+       const newDoc = await model.create(value.updateobject);
+       if (dbKeyMap[key]) {
+           outerobjectvalues[dbKeyMap[key]] = newDoc._id;
+       }
+    }
   }
-  for(const  [key,value] of Object.entries(outerobjectvalues)){
-    const update_outer = await Bank.findByIdAndUpdate(bankId, { [key]: value }, { new: true });
+  
+  if(Object.keys(outerobjectvalues).length > 0){
+      await Bank.findByIdAndUpdate(bankId, outerobjectvalues, { new: true });
   }
 
   return res.status(200)
