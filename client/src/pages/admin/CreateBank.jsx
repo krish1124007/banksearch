@@ -114,7 +114,10 @@ const getInitialFormData = () => ({
     login_salaried: 0,
     login_self_employed: 0
   },
-  processing_fees: 0,
+  processing_fees: {
+    salaried: 0,
+    self_employed: 0
+  },
   insurance: {
     life_insurance: {
       mandatory: false,
@@ -187,13 +190,16 @@ const getInitialFormData = () => ({
     },
     self_employed: {
       banking_surrogate: false,
-      banking_surrogate_details: { dates: '', period: '6_month', foir_of_abb: 0, max_club_account: 0 },
+      banking_surrogate_details: { dates: '', period: '6_month', foir_of_abb: 0, max_club_account: 0, max_loan_amount: 0 },
       gst_surrogate: false,
+      gst_surrogate_ratio: { trading: 0, manufacturing: 0, services: 0 },
       rtr_surrogate: false,
       industry_margin_surrogate: false,
+      industry_margin_surrogate_ratio: { from: 0, to: 0 },
       gross_profit_surrogate: false,
+      gross_profit_surrogate_ratio: { from: 0, to: 0 },
       lip: false,
-      lip_details: { max_multiple: 0, foir: 0 },
+      lip_details: { max_multiple: 0, foir: 0, max_loan_amount: 0 },
       low_ltv: false,
       low_ltv_ratio: 0,
       foir: false,
@@ -242,7 +248,10 @@ const CreateBank = () => {
       login_salaried: false,
       login_self_employed: false
     },
-    processing_fees: false
+    processing_fees: {
+      salaried: false,
+      self_employed: false
+    }
   });
 
   const handleChange = (key, data) => {
@@ -262,7 +271,7 @@ const CreateBank = () => {
 
   const handleChargeChange = (name, value, isChecked) => {
     // Handle nested login_fees structure
-    if (name.includes('login_fees.')) {
+    if (name.includes('login_fees.') || name.includes('processing_fees.')) {
       const [parent, child] = name.split('.');
       setFormData(prev => ({
         ...prev,
@@ -333,7 +342,10 @@ const CreateBank = () => {
     formData.legal_charges= Number(formData.legal_charges) || 0
     formData.valuation_charges= Number(formData.valuation_charges) || 0
     formData.extra_work= Number(formData.extra_work) || 0
-   formData.processing_fees= Number(formData.processing_fees) || 0
+    formData.processing_fees= {
+        salaried: Number(formData.processing_fees.salaried) || 0,
+        self_employed: Number(formData.processing_fees.self_employed) || 0
+    }
     formData.login_fees= {
         login_salaried: Number(formData.login_fees.login_salaried) || 0,
         login_self_employed: Number(formData.login_fees.login_self_employed) || 0
@@ -388,11 +400,14 @@ const CreateBank = () => {
     }
   };
 
-  const handleProcessingFeesChange = (e) => {
+  const handleProcessingFeesChange = (e, type) => {
     const value = e.target.value;
     setFormData(prev => ({
       ...prev,
-      processing_fees: Number(value) || 0
+      processing_fees: {
+        ...prev.processing_fees,
+        [type]: Number(value) || 0
+      }
     }));
   };
 
@@ -946,7 +961,6 @@ const CreateBank = () => {
                       {[
                         { name: "legal_charges", label: "Legal Charges (₹)", required: true },
                         { name: "valuation_charges", label: "Valuation Charges (₹)", required: true },
-                        { name: "processing_fees", label: "Processing Fees (₹)", required: true }
                       ].map((field, index) => (
                         <motion.div
                           key={field.name}
@@ -976,6 +990,62 @@ const CreateBank = () => {
                           )}
                         </motion.div>
                       ))}
+
+                      {/* Processing Fees - Salaried */}
+                      <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.3 }}
+                      >
+                        <div className="flex items-center mb-2">
+                          <input
+                            type="checkbox"
+                            checked={showChargeInputs.processing_fees.salaried}
+                            onChange={(e) => handleChargeChange("processing_fees.salaried", formData.processing_fees.salaried || 0, e.target.checked)}
+                            className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 mr-2"
+                          />
+                          <label className="text-sm font-medium text-gray-700">
+                            Processing Fees - Salaried (₹) <span className="text-red-500">*</span>
+                          </label>
+                        </div>
+                        {showChargeInputs.processing_fees.salaried && (
+                          <CleanNumberInput
+                            value={formData.processing_fees.salaried}
+                            onChange={(value) => handleChargeChange("processing_fees.salaried", value, true)}
+                            className="block w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                            placeholder="Enter amount for salaried"
+                            required
+                          />
+                        )}
+                      </motion.div>
+
+                      {/* Processing Fees - Self Employed */}
+                      <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.4 }}
+                      >
+                        <div className="flex items-center mb-2">
+                          <input
+                            type="checkbox"
+                            checked={showChargeInputs.processing_fees.self_employed}
+                            onChange={(e) => handleChargeChange("processing_fees.self_employed", formData.processing_fees.self_employed || 0, e.target.checked)}
+                            className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 mr-2"
+                          />
+                          <label className="text-sm font-medium text-gray-700">
+                            Processing Fees - Self Employed (₹) <span className="text-red-500">*</span>
+                          </label>
+                        </div>
+                        {showChargeInputs.processing_fees.self_employed && (
+                          <CleanNumberInput
+                            value={formData.processing_fees.self_employed}
+                            onChange={(value) => handleChargeChange("processing_fees.self_employed", value, true)}
+                            className="block w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                            placeholder="Enter amount for self employed"
+                            required
+                          />
+                        )}
+                      </motion.div>
 
                       {/* Login Fees - Salaried */}
                       <motion.div

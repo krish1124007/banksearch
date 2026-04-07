@@ -349,7 +349,7 @@ const BankDetail = () => {
         />
         <StatCard
           title="Processing Fees"
-          value={bank.processing_fees > 0 ? `₹${bank.processing_fees}` : "N/A"}
+          value={typeof bank.processing_fees === 'object' ? `S: ₹${bank.processing_fees.salaried || 0}, SE: ₹${bank.processing_fees.self_employed || 0}` : (bank.processing_fees > 0 ? `₹${bank.processing_fees}` : "N/A")}
           color="indigo"
         />
         <StatCard
@@ -635,7 +635,11 @@ const BankDetail = () => {
               <div className="space-y-2">
                 <p>
                   <span className="font-medium">Processing:</span>{" "}
-                  {bank.processing_fees > 0 ? `₹${bank.processing_fees}` : "N/A"}
+                  {typeof bank.processing_fees === 'object' ? (
+                    <span className="text-xs">
+                      Salaried: ₹{bank.processing_fees.salaried || 0}, Self-Employed: ₹{bank.processing_fees.self_employed || 0}
+                    </span>
+                  ) : (bank.processing_fees > 0 ? `₹${bank.processing_fees}` : "N/A")}
                 </p>
                 <p>
                   <span className="font-medium">Legal:</span> ₹
@@ -729,6 +733,7 @@ const BankDetail = () => {
                   <p><span className="text-gray-600">FOIR of ABB:</span> <span className="font-semibold text-blue-700">{bank.policy.self_employed.banking_surrogate_details?.foir_of_abb}%</span></p>
                   <p className="col-span-2"><span className="text-gray-600">Banking Dates:</span> <span className="font-semibold text-blue-700">{bank.policy.self_employed.banking_surrogate_details?.dates}</span></p>
                   <p><span className="text-gray-600">Max Club Account:</span> <span className="font-semibold text-blue-700">{bank.policy.self_employed.banking_surrogate_details?.max_club_account}</span></p>
+                  <p><span className="text-gray-600">Max Loan Amount:</span> <span className="font-semibold text-blue-700">₹{bank.policy.self_employed.banking_surrogate_details?.max_loan_amount?.toLocaleString() || 0}</span></p>
                 </div>
               </motion.div>
             )}
@@ -739,7 +744,15 @@ const BankDetail = () => {
                 <h4 className="font-bold text-green-800 mb-2 flex items-center gap-2">
                   <span>📄</span> GST Surrogate Details
                 </h4>
-                <p className="text-sm"><span className="text-gray-600">GST Surrogate Ratio:</span> <span className="font-semibold text-green-700 text-lg">{bank.policy.self_employed.gst_surrogate_ratio}%</span></p>
+                {typeof bank.policy.self_employed.gst_surrogate_ratio === 'object' ? (
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs">
+                    <p><span className="text-gray-600">Trading:</span> <span className="font-semibold text-green-700">{bank.policy.self_employed.gst_surrogate_ratio.trading}%</span></p>
+                    <p><span className="text-gray-600">Manufacturing:</span> <span className="font-semibold text-green-700">{bank.policy.self_employed.gst_surrogate_ratio.manufacturing}%</span></p>
+                    <p><span className="text-gray-600">Services:</span> <span className="font-semibold text-green-700">{bank.policy.self_employed.gst_surrogate_ratio.services}%</span></p>
+                  </div>
+                ) : (
+                  <p className="text-sm"><span className="text-gray-600">GST Ratio:</span> <span className="font-semibold text-green-700 text-lg">{bank.policy.self_employed.gst_surrogate_ratio}%</span></p>
+                )}
               </motion.div>
             )}
 
@@ -754,13 +767,21 @@ const BankDetail = () => {
               {bank?.policy?.self_employed?.industry_margin_surrogate && (
                 <div className="bg-teal-50 p-3 rounded-lg border border-teal-200">
                   <p className="text-xs text-teal-800 font-bold uppercase mb-1">Industry Margin</p>
-                  <p className="text-lg font-bold text-teal-700">{bank.policy.self_employed.industry_margin_surrogate_ratio}% <span className="text-xs font-normal">Ratio</span></p>
+                  {typeof bank.policy.self_employed.industry_margin_surrogate_ratio === 'object' ? (
+                    <p className="text-lg font-bold text-teal-700">{bank.policy.self_employed.industry_margin_surrogate_ratio.from}% - {bank.policy.self_employed.industry_margin_surrogate_ratio.to}%</p>
+                  ) : (
+                    <p className="text-lg font-bold text-teal-700">{bank.policy.self_employed.industry_margin_surrogate_ratio}%</p>
+                  )}
                 </div>
               )}
               {bank?.policy?.self_employed?.gross_profit_surrogate && (
                 <div className="bg-indigo-50 p-3 rounded-lg border border-indigo-200">
                   <p className="text-xs text-indigo-800 font-bold uppercase mb-1">Gross Profit</p>
-                  <p className="text-lg font-bold text-indigo-700">{bank.policy.self_employed.gross_profit_surrogate_ratio}% <span className="text-xs font-normal">Ratio</span></p>
+                  {typeof bank.policy.self_employed.gross_profit_surrogate_ratio === 'object' ? (
+                    <p className="text-lg font-bold text-indigo-700">{bank.policy.self_employed.gross_profit_surrogate_ratio.from}% - {bank.policy.self_employed.gross_profit_surrogate_ratio.to}%</p>
+                  ) : (
+                    <p className="text-lg font-bold text-indigo-700">{bank.policy.self_employed.gross_profit_surrogate_ratio}%</p>
+                  )}
                 </div>
               )}
               {bank?.policy?.self_employed?.low_ltv && (
@@ -776,9 +797,10 @@ const BankDetail = () => {
             {bank?.policy?.self_employed?.lip && (
               <motion.div className="bg-purple-50 p-4 rounded-xl border border-purple-200 shadow-sm" whileHover={{ scale: 1.01 }}>
                 <h4 className="font-bold text-purple-800 mb-2">LIP (Loan Insurance Policy) Details</h4>
-                <div className="flex gap-6 text-sm">
+                <div className="flex flex-wrap gap-6 text-sm">
                    <p><span className="text-gray-600">Max Multiple:</span> <span className="font-semibold text-purple-700 text-lg">{bank.policy.self_employed.lip_details?.max_multiple}x</span></p>
                    <p><span className="text-gray-600">LIP FOIR:</span> <span className="font-semibold text-purple-700 text-lg">{bank.policy.self_employed.lip_details?.foir}%</span></p>
+                   <p><span className="text-gray-600">Max Loan Amount:</span> <span className="font-semibold text-purple-700 text-lg">₹{bank.policy.self_employed.lip_details?.max_loan_amount?.toLocaleString() || 0}</span></p>
                 </div>
               </motion.div>
             )}

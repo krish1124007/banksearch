@@ -20,7 +20,7 @@ const SurrogateBlock = ({ field, label, color, selfEmployed, onSEChange, childre
   </div>
 );
 
-const Policy = ({ onChange }) => {
+const Policy = ({ onChange, initialData }) => {
   const [isPolicyEnabled, setIsPolicyEnabled] = useState(false);
   const [isSalariedEnabled, setIsSalariedEnabled] = useState(false);
   const [isSelfEmployedEnabled, setIsSelfEmployedEnabled] = useState(false);
@@ -36,17 +36,17 @@ const Policy = ({ onChange }) => {
 
   const [selfEmployed, setSelfEmployed] = useState({
     banking_surrogate: false,
-    banking_surrogate_details: { dates: '', period: '6_month', foir_of_abb: '', max_club_account: '' },
+    banking_surrogate_details: { dates: '', period: '6_month', foir_of_abb: '', max_club_account: '', max_loan_amount: '' },
     gst_surrogate: false,
-    gst_surrogate_ratio: '',
+    gst_surrogate_ratio: { trading: '', manufacturing: '', services: '' },
     rtr_surrogate: false,
     rtr_surrogate_ratio: '',
     industry_margin_surrogate: false,
-    industry_margin_surrogate_ratio: '',
+    industry_margin_surrogate_ratio: { from: '', to: '' },
     gross_profit_surrogate: false,
-    gross_profit_surrogate_ratio: '',
+    gross_profit_surrogate_ratio: { from: '', to: '' },
     lip: false,
-    lip_details: { max_multiple: '', foir: '' },
+    lip_details: { max_multiple: '', foir: '', max_loan_amount: '' },
     low_ltv: false,
     low_ltv_ratio: '',
     low_ltv_max_amount: '',
@@ -83,6 +83,18 @@ const Policy = ({ onChange }) => {
   };
 
   const acceptedTypes = ['Old', 'Recent'];
+
+  useEffect(() => {
+    if (initialData) {
+      setIsSalariedEnabled(!!initialData.salaried);
+      setIsSelfEmployedEnabled(!!initialData.self_employed);
+      setIsCibilEnabled(!!initialData.cibil);
+      if (initialData.salaried) setSalaried(prev => ({ ...prev, ...initialData.salaried }));
+      if (initialData.self_employed) setSelfEmployed(prev => ({ ...prev, ...initialData.self_employed }));
+      if (initialData.cibil) setCibil(prev => ({ ...prev, ...initialData.cibil }));
+      if (initialData.usp_description) setUspDescription(initialData.usp_description);
+    }
+  }, [initialData]);
 
   useEffect(() => {
     if (onChange) {
@@ -283,17 +295,36 @@ const Policy = ({ onChange }) => {
                           onChange={(v) => handleSENestedChange('banking_surrogate_details', 'max_club_account', v)}
                           className="w-full px-3 py-2 border-2 border-blue-200 rounded-lg text-sm" placeholder="Count" />
                       </div>
+                      <div>
+                        <label className="block text-sm text-blue-700 mb-1">Maximum Loan Amount</label>
+                        <CleanNumberInput value={selfEmployed.banking_surrogate_details.max_loan_amount}
+                          onChange={(v) => handleSENestedChange('banking_surrogate_details', 'max_loan_amount', v)}
+                          className="w-full px-3 py-2 border-2 border-blue-200 rounded-lg text-sm" placeholder="Amount" />
+                      </div>
                     </div>
                   </SurrogateBlock>
 
                   {/* GST Surrogate */}
                   <SurrogateBlock field="gst_surrogate" label="GST Surrogate" color="green" selfEmployed={selfEmployed} onSEChange={handleSEChange}>
-                    <div className="ml-4 mt-2 max-w-xs relative">
-                      <label className="block text-sm text-green-700 mb-1">GST Surrogate Ratio (%)</label>
-                      <CleanNumberInput value={selfEmployed.gst_surrogate_ratio || 0}
-                        onChange={(v) => handleSEChange('gst_surrogate_ratio', v)}
-                        className="w-full px-3 py-2 border-2 border-green-200 rounded-lg text-sm pr-7" placeholder="%" />
-                      <span className="absolute right-3 bottom-2 text-green-600 text-sm">%</span>
+                    <div className="ml-4 mt-2 grid grid-cols-1 md:grid-cols-3 gap-3 relative">
+                      <div>
+                        <label className="block text-sm text-green-700 mb-1">Trading (%)</label>
+                        <CleanNumberInput value={selfEmployed.gst_surrogate_ratio?.trading || 0}
+                          onChange={(v) => handleSENestedChange('gst_surrogate_ratio', 'trading', v)}
+                          className="w-full px-3 py-2 border-2 border-green-200 rounded-lg text-sm" placeholder="%" />
+                      </div>
+                      <div>
+                        <label className="block text-sm text-green-700 mb-1">Manufacturing (%)</label>
+                        <CleanNumberInput value={selfEmployed.gst_surrogate_ratio?.manufacturing || 0}
+                          onChange={(v) => handleSENestedChange('gst_surrogate_ratio', 'manufacturing', v)}
+                          className="w-full px-3 py-2 border-2 border-green-200 rounded-lg text-sm" placeholder="%" />
+                      </div>
+                      <div>
+                        <label className="block text-sm text-green-700 mb-1">Services (%)</label>
+                        <CleanNumberInput value={selfEmployed.gst_surrogate_ratio?.services || 0}
+                          onChange={(v) => handleSENestedChange('gst_surrogate_ratio', 'services', v)}
+                          className="w-full px-3 py-2 border-2 border-green-200 rounded-lg text-sm" placeholder="%" />
+                      </div>
                     </div>
                   </SurrogateBlock>
 
@@ -310,29 +341,43 @@ const Policy = ({ onChange }) => {
 
                   {/* Industry Margin Surrogate */}
                   <SurrogateBlock field="industry_margin_surrogate" label="Industry Margin Surrogate" color="teal" selfEmployed={selfEmployed} onSEChange={handleSEChange}>
-                    <div className="ml-4 mt-2 max-w-xs relative">
-                      <label className="block text-sm text-teal-700 mb-1">Industry Margin Ratio (%)</label>
-                      <CleanNumberInput value={selfEmployed.industry_margin_surrogate_ratio || 0}
-                        onChange={(v) => handleSEChange('industry_margin_surrogate_ratio', v)}
-                        className="w-full px-3 py-2 border-2 border-teal-200 rounded-lg text-sm pr-7" placeholder="%" />
-                      <span className="absolute right-3 bottom-2 text-teal-600 text-sm">%</span>
+                    <div className="ml-4 mt-2 grid grid-cols-2 gap-3 max-w-xs">
+                      <div>
+                        <label className="block text-sm text-teal-700 mb-1">From (%)</label>
+                        <CleanNumberInput value={selfEmployed.industry_margin_surrogate_ratio?.from || 0}
+                          onChange={(v) => handleSENestedChange('industry_margin_surrogate_ratio', 'from', v)}
+                          className="w-full px-3 py-2 border-2 border-teal-200 rounded-lg text-sm" placeholder="From" />
+                      </div>
+                      <div>
+                        <label className="block text-sm text-teal-700 mb-1">To (%)</label>
+                        <CleanNumberInput value={selfEmployed.industry_margin_surrogate_ratio?.to || 0}
+                          onChange={(v) => handleSENestedChange('industry_margin_surrogate_ratio', 'to', v)}
+                          className="w-full px-3 py-2 border-2 border-teal-200 rounded-lg text-sm" placeholder="To" />
+                      </div>
                     </div>
                   </SurrogateBlock>
 
                   {/* Gross Profit Surrogate */}
                   <SurrogateBlock field="gross_profit_surrogate" label="Gross Profit Surrogate" color="indigo" selfEmployed={selfEmployed} onSEChange={handleSEChange}>
-                    <div className="ml-4 mt-2 max-w-xs relative">
-                      <label className="block text-sm text-indigo-700 mb-1">Gross Profit Ratio (%)</label>
-                      <CleanNumberInput value={selfEmployed.gross_profit_surrogate_ratio || 0}
-                        onChange={(v) => handleSEChange('gross_profit_surrogate_ratio', v)}
-                        className="w-full px-3 py-2 border-2 border-indigo-200 rounded-lg text-sm pr-7" placeholder="%" />
-                      <span className="absolute right-3 bottom-2 text-indigo-600 text-sm">%</span>
+                    <div className="ml-4 mt-2 grid grid-cols-2 gap-3 max-w-xs">
+                      <div>
+                        <label className="block text-sm text-indigo-700 mb-1">From (%)</label>
+                        <CleanNumberInput value={selfEmployed.gross_profit_surrogate_ratio?.from || 0}
+                          onChange={(v) => handleSENestedChange('gross_profit_surrogate_ratio', 'from', v)}
+                          className="w-full px-3 py-2 border-2 border-indigo-200 rounded-lg text-sm" placeholder="From" />
+                      </div>
+                      <div>
+                        <label className="block text-sm text-indigo-700 mb-1">To (%)</label>
+                        <CleanNumberInput value={selfEmployed.gross_profit_surrogate_ratio?.to || 0}
+                          onChange={(v) => handleSENestedChange('gross_profit_surrogate_ratio', 'to', v)}
+                          className="w-full px-3 py-2 border-2 border-indigo-200 rounded-lg text-sm" placeholder="To" />
+                      </div>
                     </div>
                   </SurrogateBlock>
 
                   {/* LIP — inline max multiple + FOIR */}
                   <SurrogateBlock field="lip" label="LIP" color="purple" selfEmployed={selfEmployed} onSEChange={handleSEChange}>
-                    <div className="ml-4 mt-3 grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div className="ml-4 mt-3 grid grid-cols-1 md:grid-cols-3 gap-3">
                       <div>
                         <label className="block text-sm text-purple-700 mb-1">Max Multiple</label>
                         <CleanNumberInput value={selfEmployed.lip_details.max_multiple}
@@ -345,6 +390,12 @@ const Policy = ({ onChange }) => {
                           onChange={(v) => handleSENestedChange('lip_details', 'foir', v)}
                           className="w-full px-3 py-2 border-2 border-purple-200 rounded-lg text-sm pr-7" placeholder="%" />
                         <span className="absolute right-3 bottom-2 text-purple-600 text-sm">%</span>
+                      </div>
+                      <div>
+                        <label className="block text-sm text-purple-700 mb-1">Max Loan Amount</label>
+                        <CleanNumberInput value={selfEmployed.lip_details.max_loan_amount}
+                          onChange={(v) => handleSENestedChange('lip_details', 'max_loan_amount', v)}
+                          className="w-full px-3 py-2 border-2 border-purple-200 rounded-lg text-sm" placeholder="Amount" />
                       </div>
                     </div>
                   </SurrogateBlock>

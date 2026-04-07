@@ -85,8 +85,8 @@ const BankSchema = new mongoose.Schema({
         default: 0
     },
     processing_fees: {
-        type: Number,
-        default: 0
+        salaried: { type: Number, default: 0 },
+        self_employed: { type: Number, default: 0 }
     },
     valuation_charges: {
         type: Number,

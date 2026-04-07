@@ -14,13 +14,13 @@ const getInitialFormData = () => ({
   industrial_loan: { industrial_loan: false, builder_purchase: false, resale: false, interest_rate: { salaried: { from: 0, to: 0, foir: 0 }, non_salaried: { from: 0, to: 0, foir: 0 } }, LTV: "", loan_ticket_size: { from: 0, to: 0 } },
   construction_finance_loan: false, cgtmse_loan: false, machinary_loan: false,
   login_fees: { login_salaried: 0, login_self_employed: 0 },
-  processing_fees: 0,
+  processing_fees: { salaried: 0, self_employed: 0 },
   insurance: { life_insurance: { mandatory: false, full: false, less_tensor: false, lumsum: false }, property_insurance: { mandatory: false, full: false, less_tensor: false, lumsum: false }, health_insurance: { mandatory: false, full: false, less_tensor: false, lumsum: false } },
   tenor_salaried: { from: 0, to: 0 }, tenor_self_employed: { from: 0, to: 0 }, geo_limit: 0,
   age: { salaried: { min_age: 0, max_age: 0, extension_age_period: 0 }, self_employed: { min_age: 0, max_age: 0 } },
   legal_charges: 0, valuation_charges: 0, extra_work: 0, extra_work_disbursement: [],
   parallel_funding: { enabled: false, stage_percentage: 0 }, margin_money: { required: false, ratio: 0 },
-  policy: { salaried: { foir_slabs: [{ income_range: 0, foir_gross: 0, foir_net: 0 }], cash_salary_accepted: false, additional_income: { rent: false, future_rental: false, incentive: false }, company_type: { MNC: false, Govt: false, PvtLtd: false, LLP: false, Partnership: false, Trust: false, Individual: false }, deduction: { PF: false, PT: false, no_deduction: false } }, self_employed: { banking_surrogate: false, banking_surrogate_details: { dates: '', period: '6_month', foir_of_abb: 0, max_club_account: 0 }, gst_surrogate: false, rtr_surrogate: false, industry_margin_surrogate: false, gross_profit_surrogate: false, lip: false, lip_details: { max_multiple: 0, foir: 0 }, low_ltv: false, low_ltv_ratio: 0, foir: false, se_foir_slabs: [{ income_range: '', foir_gross: '', foir_net: '' }], combo: false, abb_required: false, abb_ratio: 0, dod: false, dod_details: { renewal_charges: false, renewal_charges_value: 0, renewal_charges_type: 'amount', utilization_ratio_quarterly: 0, turnover_ratio_applicable: false }, itr_required: '2_year', bcp_years: 0, not_selected_text_1: "", not_selected_text_2: "" }, cibil: { min_score: 0, call_accepted: false, accepted_type: [], current_bounce_accepted: false }, usp_description: "" }
+  policy: { salaried: { foir_slabs: [{ income_range: 0, foir_gross: 0, foir_net: 0 }], cash_salary_accepted: false, additional_income: { rent: false, future_rental: false, incentive: false }, company_type: { MNC: false, Govt: false, PvtLtd: false, LLP: false, Partnership: false, Trust: false, Individual: false }, deduction: { PF: false, PT: false, no_deduction: false } }, self_employed: { banking_surrogate: false, banking_surrogate_details: { dates: '', period: '6_month', foir_of_abb: 0, max_club_account: 0, max_loan_amount: 0 }, gst_surrogate: false, gst_surrogate_ratio: { trading: 0, manufacturing: 0, services: 0 }, rtr_surrogate: false, rtr_surrogate_ratio: 0, industry_margin_surrogate: false, industry_margin_surrogate_ratio: { from: 0, to: 0 }, gross_profit_surrogate: false, gross_profit_surrogate_ratio: { from: 0, to: 0 }, lip: false, lip_details: { max_multiple: 0, foir: 0, max_loan_amount: 0 }, low_ltv: false, low_ltv_ratio: 0, foir: false, se_foir_slabs: [{ income_range: '', foir_gross: '', foir_net: '' }], combo: false, abb_required: false, abb_ratio: 0, dod: false, dod_details: { renewal_charges: false, renewal_charges_value: 0, renewal_charges_type: 'amount', utilization_ratio_quarterly: 0, turnover_ratio_applicable: false }, itr_required: '2_year', bcp_years: 0, not_selected_text_1: "", not_selected_text_2: "" }, cibil: { min_score: 0, call_accepted: false, accepted_type: [], current_bounce_accepted: false }, usp_description: "" }
 });
 
 const mergeDefaults = (template, data) => {
@@ -452,10 +452,17 @@ const UpdateBank = () => {
                                 </div>
                             </SectionDropdown>
 
+                            {/* Processing Fees */}
+                            <SectionDropdown title="📄 Processing Fees" sectionKey="processing_fees" {...sd}>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <Inp label="Processing Salaried (₹)" value={bankData.processing_fees?.salaried} path="processing_fees.salaried" type="number" onChange={handleChange} />
+                                    <Inp label="Processing Self-Employed (₹)" value={bankData.processing_fees?.self_employed} path="processing_fees.self_employed" type="number" onChange={handleChange} />
+                                </div>
+                            </SectionDropdown>
+
                             {/* General Charges */}
                             <SectionDropdown title="ℹ️ Charges & Funding" sectionKey="charges" {...sd}>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                                    <Inp label="processing_fees (₹)" value={bankData.processing_fees} path="processing_fees" type="number" onChange={handleChange} />
                                     <Inp label="geo_limit" value={bankData.geo_limit} path="geo_limit" type="number" onChange={handleChange} />
                                     <Inp label="legal_charges (₹)" value={bankData.legal_charges} path="legal_charges" type="number" onChange={handleChange} />
                                     <Inp label="valuation_charges (₹)" value={bankData.valuation_charges} path="valuation_charges" type="number" onChange={handleChange} />
@@ -643,6 +650,7 @@ const UpdateBank = () => {
                                                                 </div>
                                                                 <Inp label="FOIR of ABB (%)" value={se.banking_surrogate_details?.foir_of_abb} path="policy.self_employed.banking_surrogate_details.foir_of_abb" type="number" onChange={handleChange} />
                                                                 <Inp label="Max Club Account" value={se.banking_surrogate_details?.max_club_account} path="policy.self_employed.banking_surrogate_details.max_club_account" type="number" onChange={handleChange} />
+                                                                <Inp label="Maximum Loan Amount" value={se.banking_surrogate_details?.max_loan_amount} path="policy.self_employed.banking_surrogate_details.max_loan_amount" type="number" onChange={handleChange} />
                                                             </div>
                                                         )}
                                                     </div>
@@ -651,8 +659,10 @@ const UpdateBank = () => {
                                                     <div className="p-3 bg-white rounded border border-gray-200">
                                                         <Chk label="GST Surrogate" value={se.gst_surrogate} path="policy.self_employed.gst_surrogate" onChange={handleChange} />
                                                         {se.gst_surrogate && (
-                                                            <div className="ml-4 mt-2 p-3 bg-blue-50 rounded">
-                                                                <Inp label="GST Surrogate Ratio (%)" value={se.gst_surrogate_ratio} path="policy.self_employed.gst_surrogate_ratio" type="number" onChange={handleChange} />
+                                                            <div className="ml-4 mt-2 grid grid-cols-1 md:grid-cols-3 gap-3 p-3 bg-blue-50 rounded">
+                                                                <Inp label="Trading (%)" value={se.gst_surrogate_ratio?.trading} path="policy.self_employed.gst_surrogate_ratio.trading" type="number" onChange={handleChange} />
+                                                                <Inp label="Manufacturing (%)" value={se.gst_surrogate_ratio?.manufacturing} path="policy.self_employed.gst_surrogate_ratio.manufacturing" type="number" onChange={handleChange} />
+                                                                <Inp label="Services (%)" value={se.gst_surrogate_ratio?.services} path="policy.self_employed.gst_surrogate_ratio.services" type="number" onChange={handleChange} />
                                                             </div>
                                                         )}
                                                     </div>
@@ -671,8 +681,9 @@ const UpdateBank = () => {
                                                     <div className="p-3 bg-white rounded border border-gray-200">
                                                         <Chk label="Industry Margin Surrogate" value={se.industry_margin_surrogate} path="policy.self_employed.industry_margin_surrogate" onChange={handleChange} />
                                                         {se.industry_margin_surrogate && (
-                                                            <div className="ml-4 mt-2 p-3 bg-blue-50 rounded">
-                                                                <Inp label="Industry Margin Ratio (%)" value={se.industry_margin_surrogate_ratio} path="policy.self_employed.industry_margin_surrogate_ratio" type="number" onChange={handleChange} />
+                                                            <div className="ml-4 mt-2 grid grid-cols-2 gap-3 p-3 bg-blue-50 rounded max-w-xs">
+                                                                <Inp label="From (%)" value={se.industry_margin_surrogate_ratio?.from} path="policy.self_employed.industry_margin_surrogate_ratio.from" type="number" onChange={handleChange} />
+                                                                <Inp label="To (%)" value={se.industry_margin_surrogate_ratio?.to} path="policy.self_employed.industry_margin_surrogate_ratio.to" type="number" onChange={handleChange} />
                                                             </div>
                                                         )}
                                                     </div>
@@ -681,8 +692,9 @@ const UpdateBank = () => {
                                                     <div className="p-3 bg-white rounded border border-gray-200">
                                                         <Chk label="Gross Profit Surrogate" value={se.gross_profit_surrogate} path="policy.self_employed.gross_profit_surrogate" onChange={handleChange} />
                                                         {se.gross_profit_surrogate && (
-                                                            <div className="ml-4 mt-2 p-3 bg-blue-50 rounded">
-                                                                <Inp label="Gross Profit Ratio (%)" value={se.gross_profit_surrogate_ratio} path="policy.self_employed.gross_profit_surrogate_ratio" type="number" onChange={handleChange} />
+                                                            <div className="ml-4 mt-2 grid grid-cols-2 gap-3 p-3 bg-blue-50 rounded max-w-xs">
+                                                                <Inp label="From (%)" value={se.gross_profit_surrogate_ratio?.from} path="policy.self_employed.gross_profit_surrogate_ratio.from" type="number" onChange={handleChange} />
+                                                                <Inp label="To (%)" value={se.gross_profit_surrogate_ratio?.to} path="policy.self_employed.gross_profit_surrogate_ratio.to" type="number" onChange={handleChange} />
                                                             </div>
                                                         )}
                                                     </div>
@@ -691,9 +703,10 @@ const UpdateBank = () => {
                                                     <div className="p-3 bg-white rounded border border-gray-200">
                                                         <Chk label="LIP" value={se.lip} path="policy.self_employed.lip" onChange={handleChange} />
                                                         {se.lip && (
-                                                            <div className="ml-4 mt-2 grid grid-cols-2 gap-3 p-3 bg-blue-50 rounded">
+                                                            <div className="ml-4 mt-2 grid grid-cols-1 md:grid-cols-3 gap-3 p-3 bg-blue-50 rounded">
                                                                 <Inp label="Max Multiple" value={se.lip_details?.max_multiple} path="policy.self_employed.lip_details.max_multiple" type="number" onChange={handleChange} />
                                                                 <Inp label="FOIR (%)" value={se.lip_details?.foir} path="policy.self_employed.lip_details.foir" type="number" onChange={handleChange} />
+                                                                <Inp label="Max Loan Amount" value={se.lip_details?.max_loan_amount} path="policy.self_employed.lip_details.max_loan_amount" type="number" onChange={handleChange} />
                                                             </div>
                                                         )}
                                                     </div>

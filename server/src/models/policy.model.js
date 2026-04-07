@@ -41,13 +41,15 @@ const BankingSurrogateDetailsSchema = new mongoose.Schema({
     dates: { type: String }, // 6 numbers with comma e.g. "1,5,10,15,20,25"
     period: { type: String, enum: ['6_month', '9_month', '1_year'], default: '6_month' },
     foir_of_abb: { type: Number }, // in %
-    max_club_account: { type: Number } // in number
+    max_club_account: { type: Number }, // in number
+    max_loan_amount: { type: Number }
 }, { _id: false });
 
 // LIP Details Schema
 const LIPDetailsSchema = new mongoose.Schema({
     max_multiple: { type: Number },
-    foir: { type: Number }
+    foir: { type: Number },
+    max_loan_amount: { type: Number }
 }, { _id: false });
 
 // DOD Details Schema
@@ -64,13 +66,23 @@ const SelfEmployedPolicySchema = new mongoose.Schema({
     banking_surrogate: { type: Boolean, default: false },
     banking_surrogate_details: { type: BankingSurrogateDetailsSchema },
     gst_surrogate: { type: Boolean, default: false },
-    gst_surrogate_ratio: { type: Number, default: 0 },
+    gst_surrogate_ratio: {
+        trading: { type: Number, default: 0 },
+        manufacturing: { type: Number, default: 0 },
+        services: { type: Number, default: 0 }
+    },
     rtr_surrogate: { type: Boolean, default: false },
     rtr_surrogate_ratio: { type: Number, default: 0 },
     industry_margin_surrogate: { type: Boolean, default: false },
-    industry_margin_surrogate_ratio: { type: Number, default: 0 },
+    industry_margin_surrogate_ratio: {
+        from: { type: Number, default: 0 },
+        to: { type: Number, default: 0 }
+    },
     gross_profit_surrogate: { type: Boolean, default: false },
-    gross_profit_surrogate_ratio: { type: Number, default: 0 },
+    gross_profit_surrogate_ratio: {
+        from: { type: Number, default: 0 },
+        to: { type: Number, default: 0 }
+    },
     lip: { type: Boolean, default: false },
     lip_details: { type: LIPDetailsSchema },
     low_ltv: { type: Boolean, default: false },
