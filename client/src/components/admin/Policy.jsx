@@ -84,7 +84,15 @@ const Policy = ({ onChange, initialData }) => {
 
   const acceptedTypes = ['Old', 'Recent'];
 
+  // isMounted ref must be declared before both useEffects
+  const isMounted = React.useRef(false);
+
   useEffect(() => {
+    // Run ONLY ONCE on mount to pre-populate form from initialData.
+    // Using [] instead of [initialData] is intentional and critical:
+    // CreateBank creates a NEW formData.policy object reference on every render,
+    // so [initialData] would cause: setSalaried → Policy re-renders → onChange →
+    // parent setState → new initialData ref → setSalaried again → infinite loop.
     if (initialData) {
       setIsSalariedEnabled(!!initialData.salaried);
       setIsSelfEmployedEnabled(!!initialData.self_employed);
@@ -94,9 +102,16 @@ const Policy = ({ onChange, initialData }) => {
       if (initialData.cibil) setCibil(prev => ({ ...prev, ...initialData.cibil }));
       if (initialData.usp_description) setUspDescription(initialData.usp_description);
     }
-  }, [initialData]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // intentionally empty — run once on mount only
 
   useEffect(() => {
+    // Skip calling onChange on the very first mount to prevent the loop:
+    // onChange fires → parent setState → component re-renders → onChange again.
+    if (!isMounted.current) {
+      isMounted.current = true;
+      return;
+    }
     if (onChange) {
       onChange({
         salaried: isSalariedEnabled ? salaried : null,

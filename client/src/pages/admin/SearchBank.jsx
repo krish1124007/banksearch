@@ -515,10 +515,12 @@ const SearchBank = () => {
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-sm font-medium text-blue-700 mb-1">
+                  <label htmlFor="loan-type" className="block text-sm font-medium text-blue-700 mb-1">
                     Loan Type
                   </label>
                   <select
+                    id="loan-type"
+                    name="loan_type"
                     value={loanType}
                     onChange={(e) => {
                       setLoanType(e.target.value);
@@ -538,10 +540,12 @@ const SearchBank = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-blue-700 mb-1">
+                  <label htmlFor="loan-sub-option" className="block text-sm font-medium text-blue-700 mb-1">
                     Loan Sub Option
                   </label>
                   <select
+                    id="loan-sub-option"
+                    name="loan_sub_option"
                     value={loanSubOption}
                     onChange={(e) => setLoanSubOption(e.target.value)}
                     className="block w-full px-4 py-2 border border-blue-200 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
@@ -564,10 +568,12 @@ const SearchBank = () => {
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-blue-700 mb-1">
+                  <label htmlFor="interest-employment-type" className="block text-sm font-medium text-blue-700 mb-1">
                     Employment Type
                   </label>
                   <select
+                    id="interest-employment-type"
+                    name="interest_employment_type"
                     value={interestRate.employmentType}
                     onChange={(e) =>
                       setInterestRate((prev) => ({
@@ -582,10 +588,12 @@ const SearchBank = () => {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-blue-700 mb-1">
+                  <label htmlFor="interest-rate-from" className="block text-sm font-medium text-blue-700 mb-1">
                     From (%)
                   </label>
                   <input
+                    id="interest-rate-from"
+                    name="interest_rate_from"
                     type="number"
                     step="0.1"
                     className="block w-full px-4 py-2 border border-blue-200 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
@@ -599,10 +607,12 @@ const SearchBank = () => {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-blue-700 mb-1">
+                  <label htmlFor="interest-rate-to" className="block text-sm font-medium text-blue-700 mb-1">
                     To (%)
                   </label>
                   <input
+                    id="interest-rate-to"
+                    name="interest_rate_to"
                     type="number"
                     step="0.1"
                     className="block w-full px-4 py-2 border border-blue-200 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
@@ -623,10 +633,12 @@ const SearchBank = () => {
                 </label>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs text-blue-600 mb-1">
+                    <label htmlFor="foir-salaried" className="block text-xs text-blue-600 mb-1">
                       Salaried
                     </label>
                     <input
+                      id="foir-salaried"
+                      name="foir_salaried"
                       type="number"
                       step="0.1"
                       className="block w-full px-4 py-2 border border-blue-200 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
@@ -640,10 +652,12 @@ const SearchBank = () => {
                     />
                   </div>
                   <div>
-                    <label className="block text-xs text-blue-600 mb-1">
+                    <label htmlFor="foir-self-employed" className="block text-xs text-blue-600 mb-1">
                       Self Employed
                     </label>
                     <input
+                      id="foir-self-employed"
+                      name="foir_self_employed"
                       type="number"
                       step="0.1"
                       className="block w-full px-4 py-2 border border-blue-200 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
@@ -661,12 +675,14 @@ const SearchBank = () => {
 
               {/* LTV Fields */}
               <div className="mt-4">
-                <label className="block text-sm font-medium text-blue-700 mb-1">
+                <label htmlFor="ltv" className="block text-sm font-medium text-blue-700 mb-1">
                   LTV 
                 </label>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap4" >
                   
                   <input
+                      id="ltv"
+                      name="ltv"
                       type="text"
                       step="0.1"
                       className="block w-full px-4 py-2 border border-blue-200 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
@@ -686,10 +702,12 @@ const SearchBank = () => {
                 </label>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs text-blue-600 mb-1">
+                    <label htmlFor="loan-ticket-from" className="block text-xs text-blue-600 mb-1">
                       From
                     </label>
                     <input
+                      id="loan-ticket-from"
+                      name="loan_ticket_size_from"
                       type="number"
                       className="block w-full px-4 py-2 border border-blue-200 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
                       value={loanTicketSize.from}
@@ -702,10 +720,12 @@ const SearchBank = () => {
                     />
                   </div>
                   <div>
-                    <label className="block text-xs text-blue-600 mb-1">
+                    <label htmlFor="loan-ticket-to" className="block text-xs text-blue-600 mb-1">
                       To
                     </label>
                     <input
+                      id="loan-ticket-to"
+                      name="loan_ticket_size_to"
                       type="number"
                       className="block w-full px-4 py-2 border border-blue-200 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
                       value={loanTicketSize.to}
@@ -728,10 +748,12 @@ const SearchBank = () => {
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-sm font-medium text-blue-700 mb-1">
+                  <label htmlFor="insurance-type" className="block text-sm font-medium text-blue-700 mb-1">
                     Insurance Type
                   </label>
                   <select
+                    id="insurance-type"
+                    name="insurance_type"
                     value={insuranceType}
                     onChange={(e) => setInsuranceType(e.target.value)}
                     className="block w-full px-4 py-2 border border-blue-200 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
@@ -745,10 +767,12 @@ const SearchBank = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-blue-700 mb-1">
+                  <label htmlFor="insurance-sub-type" className="block text-sm font-medium text-blue-700 mb-1">
                     Insurance Sub-Type
                   </label>
                   <select
+                    id="insurance-sub-type"
+                    name="insurance_sub_type"
                     value={insuranceSubType}
                     onChange={(e) => setInsuranceSubType(e.target.value)}
                     className="block w-full px-4 py-2 border border-blue-200 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
@@ -917,10 +941,12 @@ const SearchBank = () => {
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-blue-700 mb-1">
+                  <label htmlFor="legal-charges" className="block text-sm font-medium text-blue-700 mb-1">
                     Legal Charges (₹)
                   </label>
                   <input
+                    id="legal-charges"
+                    name="legal_charges"
                     type="number"
                     className="block w-full px-4 py-2 border border-blue-200 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
                     value={legalCharges}
@@ -928,10 +954,12 @@ const SearchBank = () => {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-blue-700 mb-1">
+                  <label htmlFor="valuation-charges" className="block text-sm font-medium text-blue-700 mb-1">
                     Valuation Charges (₹)
                   </label>
                   <input
+                    id="valuation-charges"
+                    name="valuation_charges"
                     type="number"
                     className="block w-full px-4 py-2 border border-blue-200 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
                     value={valuationCharges}
@@ -939,10 +967,12 @@ const SearchBank = () => {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-blue-700 mb-1">
+                  <label htmlFor="login-fees-se" className="block text-sm font-medium text-blue-700 mb-1">
                     Login Fees (₹)
                   </label>
                   <input
+                    id="login-fees-se"
+                    name="login_fees_self_employed"
                     type="number"
                     className="block w-full px-4 py-2 border border-blue-200 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
                     value={loginFees.login_self_employed}
@@ -953,10 +983,12 @@ const SearchBank = () => {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-blue-700 mb-1">
+                  <label htmlFor="login-fees-salaried" className="block text-sm font-medium text-blue-700 mb-1">
                     Login Fees (salaried) (₹)
                   </label>
                   <input
+                    id="login-fees-salaried"
+                    name="login_fees_salaried"
                     type="number"
                     className="block w-full px-4 py-2 border border-blue-200 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
                     value={loginFees.login_salaried}
