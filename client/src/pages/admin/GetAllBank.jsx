@@ -17,7 +17,10 @@ const GetAllBank = () => {
         `${BACKENDDOMAIN}/api/v1/bank/getallbanks`
       );
       if (response.data.data.success) {
-        setBanks(response.data.data.data);
+        const sortedBanks = response.data.data.data.sort((a, b) => 
+          (a.bank_details?.bank_name || "").localeCompare(b.bank_details?.bank_name || "")
+        );
+        setBanks(sortedBanks);
       } else {
         toast.error("Failed to fetch banks.");
       }

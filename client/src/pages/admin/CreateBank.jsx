@@ -20,8 +20,12 @@ const getInitialFormData = () => ({
     bank_name: "",
     bank_sm_name: "",
     bank_sm_contact_number: "",
+    bank_sm_email: "",
     bank_rsm_name: "",
-    bank_rsm_contact_number: ""
+    bank_rsm_contact_number: "",
+    bank_rsm_email: "",
+    max_attachment_size: "",
+    process_type: "online"
   },
   additional_notes: "",
   contact_number: "",
@@ -164,9 +168,11 @@ const getInitialFormData = () => ({
     required: false,
     ratio: 0
   },
+  dod: 0,
+  special_discount_prices: [{ price: '', charge_name: 'Processing Fees', from_date: '', to_date: '' }],
   policy: {
     salaried: {
-      foir_slabs: [{ income_range: 0, foir_gross: 0, foir_net: 0 }],
+      foir_slabs: [{ from: 0, to: 0, foir_net: 0 }],
       cash_salary_accepted: false,
       additional_income: {
         rent: false,
@@ -194,6 +200,7 @@ const getInitialFormData = () => ({
       gst_surrogate: false,
       gst_surrogate_ratio: { trading: 0, manufacturing: 0, services: 0 },
       rtr_surrogate: false,
+      rtr_surrogate_details: [{ emi_cleared: 0, multiple: 0 }],
       industry_margin_surrogate: false,
       industry_margin_surrogate_ratio: { from: 0, to: 0 },
       gross_profit_surrogate: false,
@@ -203,7 +210,7 @@ const getInitialFormData = () => ({
       low_ltv: false,
       low_ltv_ratio: 0,
       foir: false,
-      se_foir_slabs: [{ income_range: '', foir_gross: '', foir_net: '' }],
+      se_foir_slabs: [{ from: 0, to: 0, foir_net: 0 }],
       combo: false,
       abb_required: false,
       abb_ratio: 0,
@@ -626,6 +633,75 @@ const CreateBank = () => {
                         className="block w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
                         placeholder="Enter RSM Contact Number"
                       />
+                    </motion.div>
+
+                    <motion.div
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.7 }}
+                    >
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Bank SM Email
+                      </label>
+                      <input
+                        type="email"
+                        value={formData.bank_details.bank_sm_email}
+                        onChange={(e) => handleBankDetailsChange("bank_sm_email", e.target.value)}
+                        className="block w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                        placeholder="Enter SM Email"
+                      />
+                    </motion.div>
+
+                    <motion.div
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.8 }}
+                    >
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Bank RSM Email
+                      </label>
+                      <input
+                        type="email"
+                        value={formData.bank_details.bank_rsm_email}
+                        onChange={(e) => handleBankDetailsChange("bank_rsm_email", e.target.value)}
+                        className="block w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                        placeholder="Enter RSM Email"
+                      />
+                    </motion.div>
+
+                    <motion.div
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.9 }}
+                    >
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Max Attachment Email Size (MB)
+                      </label>
+                      <CleanNumberInput
+                        value={formData.bank_details.max_attachment_size}
+                        onChange={(v) => handleBankDetailsChange("max_attachment_size", v)}
+                        className="block w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                        placeholder="e.g. 25"
+                      />
+                    </motion.div>
+
+                    <motion.div
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 1.0 }}
+                    >
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Process Option
+                      </label>
+                      <select
+                        value={formData.bank_details.process_type}
+                        onChange={(e) => handleBankDetailsChange("process_type", e.target.value)}
+                        className="block w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                      >
+                        <option value="online">Online</option>
+                        <option value="offline">Offline</option>
+                        <option value="mix">Mix</option>
+                      </select>
                     </motion.div>
                   </div>
                 </motion.div>
@@ -1217,6 +1293,108 @@ const CreateBank = () => {
                           </div>
                         </div>
                       )}
+                    </div>
+
+                    {/* Special Discount Price Section */}
+                    <div className="mt-8 pt-8 border-t border-gray-200">
+                      <div className="flex items-center justify-between mb-4">
+                        <h4 className="text-md font-semibold text-gray-700 flex items-center">
+                          <svg className="w-5 h-5 mr-2 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7" />
+                          </svg>
+                          Special Discount Prices
+                        </h4>
+                        <button
+                          type="button"
+                          onClick={() => setFormData({ ...formData, special_discount_prices: [...formData.special_discount_prices, { price: '', charge_name: 'Processing Fees', from_date: '', to_date: '' }] })}
+                          className="px-3 py-1 bg-indigo-500 text-white text-xs rounded-lg hover:bg-indigo-600 transition-colors flex items-center"
+                        >
+                          <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                          </svg>
+                          Add Discount
+                        </button>
+                      </div>
+                      
+                      <div className="space-y-4">
+                        {formData.special_discount_prices.map((discount, index) => (
+                          <motion.div 
+                            key={index}
+                            initial={{ opacity: 0, x: -10 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            className="grid grid-cols-1 md:grid-cols-5 gap-3 p-3 bg-blue-50 rounded mb-3 relative"
+                          >
+                            <div className="flex-1">
+                              <label className="block text-xs font-medium text-blue-700 mb-1">Charge Type</label>
+                              <select
+                                value={discount.charge_name}
+                                onChange={(e) => {
+                                  const newDiscounts = [...formData.special_discount_prices];
+                                  newDiscounts[index].charge_name = e.target.value;
+                                  setFormData({ ...formData, special_discount_prices: newDiscounts });
+                                }}
+                                className="block w-full px-2 py-1.5 border border-blue-300 rounded text-xs bg-white focus:ring-1 focus:ring-blue-500"
+                              >
+                                <option value="Processing Fees">Processing Fees</option>
+                                <option value="Login Fees">Login Fees</option>
+                                <option value="Legal Charges">Legal Charges</option>
+                                <option value="Valuation Charges">Valuation Charges</option>
+                              </select>
+                            </div>
+                            <div className="flex-1">
+                              <label className="block text-xs font-medium text-blue-700 mb-1">Price (₹)</label>
+                              <CleanNumberInput
+                                value={discount.price}
+                                onChange={(v) => {
+                                  const newDiscounts = [...formData.special_discount_prices];
+                                  newDiscounts[index].price = v;
+                                  setFormData({ ...formData, special_discount_prices: newDiscounts });
+                                }}
+                                className="block w-full px-2 py-1.5 border border-blue-300 rounded text-xs focus:ring-1 focus:ring-blue-500"
+                                placeholder="Discounted Price"
+                              />
+                            </div>
+                            <div className="flex-1">
+                              <label className="block text-xs font-medium text-blue-700 mb-1">From Date</label>
+                              <input
+                                type="date"
+                                value={discount.from_date}
+                                onChange={(e) => {
+                                  const newDiscounts = [...formData.special_discount_prices];
+                                  newDiscounts[index].from_date = e.target.value;
+                                  setFormData({ ...formData, special_discount_prices: newDiscounts });
+                                }}
+                                className="block w-full px-2 py-1.5 border border-blue-300 rounded text-xs focus:ring-1 focus:ring-blue-500"
+                              />
+                            </div>
+                            <div className="flex-1">
+                              <label className="block text-xs font-medium text-blue-700 mb-1">To Date</label>
+                              <input
+                                type="date"
+                                value={discount.to_date}
+                                onChange={(e) => {
+                                  const newDiscounts = [...formData.special_discount_prices];
+                                  newDiscounts[index].to_date = e.target.value;
+                                  setFormData({ ...formData, special_discount_prices: newDiscounts });
+                                }}
+                                className="block w-full px-2 py-1.5 border border-blue-300 rounded text-xs focus:ring-1 focus:ring-blue-500"
+                              />
+                            </div>
+                            <div className="flex items-end mb-1">
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  const newDiscounts = formData.special_discount_prices.filter((_, i) => i !== index);
+                                  setFormData({ ...formData, special_discount_prices: newDiscounts });
+                                }}
+                                className="text-red-500 hover:text-red-700 text-xs font-medium"
+                              >
+                                Remove
+                              </button>
+                            </div>
+                          </motion.div>
+                        ))}
+                      </div>
                     </div>
                   </div>
                 </motion.div>

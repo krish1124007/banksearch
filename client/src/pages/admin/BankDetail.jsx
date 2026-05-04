@@ -403,6 +403,26 @@ const BankDetail = () => {
             title="ASM Contact"
             value={bank?.bank_details?.bank_rsm_contact_number || "N/A"}
             color="purple" />
+          <StatCard
+            title="SM Email"
+            value={bank?.bank_details?.bank_sm_email || "N/A"}
+            color="blue"
+          />
+          <StatCard
+            title="ASM Email"
+            value={bank?.bank_details?.bank_rsm_email || "N/A"}
+            color="green"
+          />
+          <StatCard
+            title="Max Attachment"
+            value={bank?.bank_details?.max_attachment_size ? `${bank.bank_details.max_attachment_size} MB` : "N/A"}
+            color="indigo"
+          />
+          <StatCard
+            title="Process Type"
+            value={bank?.bank_details?.process_type || "N/A"}
+            color="purple"
+          />
         </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -711,6 +731,31 @@ const BankDetail = () => {
                   </div>
                 </div>
               </motion.div>
+
+              {/* Special Discount Prices */}
+              {(bank.special_discount_prices || []).length > 0 && (
+                <motion.div
+                  className="bg-white p-4 rounded-lg shadow-sm border border-gray-200 md:col-span-2"
+                  whileHover={{ scale: 1.01 }}
+                >
+                  <h3 className="font-semibold text-gray-800 mb-3 flex items-center gap-2">
+                    <span>🏷️</span> Special Discount Prices
+                  </h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {bank.special_discount_prices.map((discount, idx) => (
+                      <div key={idx} className="bg-indigo-50 p-3 rounded-lg border border-indigo-100">
+                        <div className="flex justify-between items-center mb-2">
+                          <span className="text-sm font-bold text-indigo-800">{discount.charge_name || 'Discount'}: ₹{discount.price}</span>
+                        </div>
+                        <div className="flex justify-between text-xs text-indigo-600">
+                          <span>From: {discount.from_date ? new Date(discount.from_date).toLocaleDateString() : 'N/A'}</span>
+                          <span>To: {discount.to_date ? new Date(discount.to_date).toLocaleDateString() : 'N/A'}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </motion.div>
+              )}
             </div>
           </SectionCard>
 
@@ -775,8 +820,15 @@ const BankDetail = () => {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {bank?.policy?.self_employed?.rtr_surrogate && (
                   <div className="bg-orange-50 p-3 rounded-lg border border-orange-200">
-                    <p className="text-xs text-orange-800 font-bold uppercase mb-1">RTR Surrogate</p>
-                    <p className="text-lg font-bold text-orange-700">{bank.policy.self_employed.rtr_surrogate_ratio}% <span className="text-xs font-normal">Ratio</span></p>
+                    <p className="text-xs text-orange-800 font-bold uppercase mb-2">RTR Surrogate Details</p>
+                    <div className="space-y-2">
+                      {(bank.policy.self_employed.rtr_surrogate_details || []).map((pair, idx) => (
+                        <div key={idx} className="flex justify-between items-center bg-white p-2 rounded text-xs border border-orange-100">
+                          <span className="text-gray-600">EMI Cleared: <span className="font-bold text-orange-700">{pair.emi_cleared}</span></span>
+                          <span className="text-gray-600">Multiple: <span className="font-bold text-orange-700">{pair.multiple}x</span></span>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 )}
                 {bank?.policy?.self_employed?.industry_margin_surrogate && (
@@ -829,9 +881,10 @@ const BankDetail = () => {
                   <div className="grid grid-cols-2 gap-3">
                     {bank.policy.self_employed.se_foir_slabs.map((slab, i) => (
                       <div key={i} className="bg-white p-2 rounded border border-amber-100 text-xs">
-                        <p className="font-bold text-amber-700 border-b border-amber-50 mb-1">Income: {slab.income_range}K</p>
+                        <p className="font-bold text-amber-700 border-b border-amber-50 mb-1">
+                          Range: {slab.from || 0} - {slab.to || 0}
+                        </p>
                         <div className="flex justify-between">
-                          <span>Gross: <b>{slab.foir_gross}%</b></span>
                           <span>Net: <b>{slab.foir_net}%</b></span>
                         </div>
                       </div>
@@ -889,12 +942,8 @@ const BankDetail = () => {
                       whileHover={{ scale: 1.03 }}
                     >
                       <div className="flex justify-between items-center mb-2">
-                        <span className="font-medium">Income:</span>
-                        <span className="font-semibold">{item.income_range}K</span>
-                      </div>
-                      <div className="flex justify-between items-center mb-2">
-                        <span className="font-medium">FOIR Gross:</span>
-                        <span className="text-blue-600 font-semibold">{item.foir_gross}%</span>
+                        <span className="font-medium">Range:</span>
+                        <span className="font-semibold">{item.from || 0} - {item.to || 0}</span>
                       </div>
                       <div className="flex justify-between items-center">
                         <span className="font-medium">FOIR Net:</span>

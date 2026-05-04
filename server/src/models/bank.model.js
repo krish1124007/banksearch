@@ -17,6 +17,20 @@ const BankSchema = new mongoose.Schema({
         },
         bank_rsm_contact_number: {
             type: String
+        },
+        bank_sm_email: {
+            type: String
+        },
+        bank_rsm_email: {
+            type: String
+        },
+        max_attachment_size: {
+            type: Number
+        },
+        process_type: {
+            type: String,
+            enum: ['online', 'offline', 'mix'],
+            default: 'online'
         }
     },
 
@@ -121,7 +135,13 @@ const BankSchema = new mongoose.Schema({
     additional_notes: {
         type: String,
         default: ""
-    }
+    },
+    special_discount_prices: [{
+        price: { type: Number },
+        charge_name: { type: String },
+        from_date: { type: Date },
+        to_date: { type: Date }
+    }]
 })
 
 

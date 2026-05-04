@@ -6,7 +6,17 @@ import { toast } from 'react-toastify';
 import { BACKENDDOMAIN } from "../../const/backenddomain";
 
 const getInitialFormData = () => ({
-  bank_details: { bank_name: "", bank_sm_name: "", bank_sm_contact_number: "", bank_rsm_name: "", bank_rsm_contact_number: "" },
+  bank_details: { 
+    bank_name: "", 
+    bank_sm_name: "", 
+    bank_sm_contact_number: "", 
+    bank_sm_email: "",
+    bank_rsm_name: "", 
+    bank_rsm_contact_number: "",
+    bank_rsm_email: "",
+    max_attachment_size: "",
+    process_type: "online"
+  },
   additional_notes: "", contact_number: "",
   home_loan: { home_loan: false, under_construction: false, ready_possession: false, resale: false, balance_transfer: false, balance_transfer_and_topup: false, plot_purchase: false, plot_plus_construction: false, pg: false, city_area: false, old_age_property: false, nir_home_loan: { salary_in_dollar: false, visa_type: "" }, interest_rate: { salaried: { from: 0, to: 0, foir: 0 }, non_salaried: { from: 0, to: 0, foir: 0 } }, LTV: "", loan_ticket_size: { from: 0, to: 0 }, layout_plan: 0, unit_plan: 0 },
   mortgage_loan: { mortgage_loan: false, residential_self_occupied: false, residential_rented: false, residential_vacant: false, commercial_self_occupied: false, commercial_rented: false, commercial_vacant: false, industrial_self_occupied: false, industrial_rented: false, industrial_vacant: false, plot_residential: false, plot_commercial: false, plot_industrial: false, godown_self_occupied: false, godown_rented: false, godown_vacant: false, warehouse_self_occupied: false, warehouse_rented: false, warehouse_vacant: false, school_self_occupied: false, school_rented: false, pg_self_occupied: false, pg_rented: false, pg_vacant: false, hospital_self_occupied: false, hospital_rented: false, interest_rate: { salaried: { from: 0, to: 0, foir: 0 }, non_salaried: { from: 0, to: 0, foir: 0 } }, LTV: "", loan_ticket_size: { from: 0, to: 0 } },
@@ -20,7 +30,8 @@ const getInitialFormData = () => ({
   age: { salaried: { min_age: 0, max_age: 0, extension_age_period: 0 }, self_employed: { min_age: 0, max_age: 0 } },
   legal_charges: 0, valuation_charges: 0, extra_work: 0, extra_work_disbursement: [],
   parallel_funding: { enabled: false, stage_percentage: 0 }, margin_money: { required: false, ratio: 0 },
-  policy: { salaried: { foir_slabs: [{ income_range: 0, foir_gross: 0, foir_net: 0 }], cash_salary_accepted: false, additional_income: { rent: false, future_rental: false, incentive: false }, company_type: { MNC: false, Govt: false, PvtLtd: false, LLP: false, Partnership: false, Trust: false, Individual: false }, deduction: { PF: false, PT: false, no_deduction: false } }, self_employed: { banking_surrogate: false, banking_surrogate_details: { dates: '', period: '6_month', foir_of_abb: 0, max_club_account: 0, max_loan_amount: 0 }, gst_surrogate: false, gst_surrogate_ratio: { trading: 0, manufacturing: 0, services: 0 }, rtr_surrogate: false, rtr_surrogate_ratio: 0, industry_margin_surrogate: false, industry_margin_surrogate_ratio: { from: 0, to: 0 }, gross_profit_surrogate: false, gross_profit_surrogate_ratio: { from: 0, to: 0 }, lip: false, lip_details: { max_multiple: 0, foir: 0, max_loan_amount: 0 }, low_ltv: false, low_ltv_ratio: 0, foir: false, se_foir_slabs: [{ income_range: '', foir_gross: '', foir_net: '' }], combo: false, abb_required: false, abb_ratio: 0, dod: false, dod_details: { renewal_charges: false, renewal_charges_value: 0, renewal_charges_type: 'amount', utilization_ratio_quarterly: 0, turnover_ratio_applicable: false }, itr_required: '2_year', bcp_years: 0, not_selected_text_1: "", not_selected_text_2: "" }, cibil: { min_score: 0, call_accepted: false, accepted_type: [], current_bounce_accepted: false }, usp_description: "" }
+  special_discount_prices: [{ price: '', charge_name: 'Processing Fees', from_date: '', to_date: '' }],
+  policy: { salaried: { foir_slabs: [{ from: 0, to: 0, foir_net: 0 }], cash_salary_accepted: false, additional_income: { rent: false, future_rental: false, incentive: false }, company_type: { MNC: false, Govt: false, PvtLtd: false, LLP: false, Partnership: false, Trust: false, Individual: false }, deduction: { PF: false, PT: false, no_deduction: false } }, self_employed: { banking_surrogate: false, banking_surrogate_details: { dates: '', period: '6_month', foir_of_abb: 0, max_club_account: 0, max_loan_amount: 0 }, gst_surrogate: false, gst_surrogate_ratio: { trading: 0, manufacturing: 0, services: 0 }, rtr_surrogate: false, rtr_surrogate_details: [{ emi_cleared: 0, multiple: 0 }], industry_margin_surrogate: false, industry_margin_surrogate_ratio: { from: 0, to: 0 }, gross_profit_surrogate: false, gross_profit_surrogate_ratio: { from: 0, to: 0 }, lip: false, lip_details: { max_multiple: 0, foir: 0, max_loan_amount: 0 }, low_ltv: false, low_ltv_ratio: 0, foir: false, se_foir_slabs: [{ from: 0, to: 0, foir_net: 0 }], combo: false, abb_required: false, abb_ratio: 0, dod: false, dod_details: { renewal_charges: false, renewal_charges_value: 0, renewal_charges_type: 'amount', utilization_ratio_quarterly: 0, turnover_ratio_applicable: false }, itr_required: '2_year', bcp_years: 0, not_selected_text_1: "", not_selected_text_2: "" }, cibil: { min_score: 0, call_accepted: false, accepted_type: [], current_bounce_accepted: false }, usp_description: "" }
 });
 
 const mergeDefaults = (template, data) => {
@@ -286,7 +297,7 @@ const UpdateBank = () => {
             if (!newData.policy) newData.policy = {};
             if (!newData.policy.salaried) newData.policy.salaried = {};
             const sal = newData.policy.salaried;
-            sal.foir_slabs = [...(sal.foir_slabs || []), { income_range: '', foir_gross: '', foir_net: '' }];
+            sal.foir_slabs = [...(sal.foir_slabs || []), { from: 0, to: 0, foir_net: 0 }];
             return newData;
         });
     };
@@ -306,7 +317,7 @@ const UpdateBank = () => {
             if (!newData.policy) newData.policy = {};
             if (!newData.policy.self_employed) newData.policy.self_employed = {};
             const se = newData.policy.self_employed;
-            se.se_foir_slabs = [...(se.se_foir_slabs || []), { income_range: '', foir_gross: '', foir_net: '' }];
+            se.se_foir_slabs = [...(se.se_foir_slabs || []), { from: 0, to: 0, foir_net: 0 }];
             return newData;
         });
     };
@@ -425,8 +436,23 @@ const UpdateBank = () => {
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <Inp label="bank_sm_name" value={bankData.bank_details?.bank_sm_name} path="bank_details.bank_sm_name" onChange={handleChange} />
                                     <Inp label="bank_sm_contact_number" value={bankData.bank_details?.bank_sm_contact_number} path="bank_details.bank_sm_contact_number" onChange={handleChange} />
+                                    <Inp label="bank_sm_email" value={bankData.bank_details?.bank_sm_email} path="bank_details.bank_sm_email" type="email" onChange={handleChange} />
                                     <Inp label="bank_rsm_name" value={bankData.bank_details?.bank_rsm_name} path="bank_details.bank_rsm_name" onChange={handleChange} />
                                     <Inp label="bank_rsm_contact_number" value={bankData.bank_details?.bank_rsm_contact_number} path="bank_details.bank_rsm_contact_number" onChange={handleChange} />
+                                    <Inp label="bank_rsm_email" value={bankData.bank_details?.bank_rsm_email} path="bank_details.bank_rsm_email" type="email" onChange={handleChange} />
+                                    <Inp label="max_attachment_size (MB)" value={bankData.bank_details?.max_attachment_size} path="bank_details.max_attachment_size" type="number" onChange={handleChange} />
+                                    <div className="mb-4">
+                                        <label className="block text-sm font-medium text-blue-700 capitalize mb-1">Process Type:</label>
+                                        <select 
+                                            value={bankData.bank_details?.process_type || 'online'} 
+                                            onChange={(e) => handleChange(e, "bank_details.process_type")}
+                                            className="block w-full rounded-md border border-blue-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm p-2"
+                                        >
+                                            <option value="online">Online</option>
+                                            <option value="offline">Offline</option>
+                                            <option value="mix">Mix</option>
+                                        </select>
+                                    </div>
                                     {/* One Pager - full width */}
                                     <div className="md:col-span-2">
                                         <label className="block text-sm font-medium text-blue-700 mb-1">
@@ -507,6 +533,48 @@ const UpdateBank = () => {
                                             <Inp label="Ratio %" value={bankData.margin_money?.ratio} path="margin_money.ratio" type="number" onChange={handleChange} />
                                         </div>
                                     )}
+                                </div>
+
+                                {/* Special Discount Prices */}
+                                <div className="mt-6 pt-6 border-t border-blue-100">
+                                    <div className="flex items-center justify-between mb-4">
+                                        <h3 className="text-md font-semibold text-blue-700">🏷️ Special Discount Prices</h3>
+                                        <button type="button" 
+                                            onClick={() => setBankData(prev => ({ ...prev, special_discount_prices: [...(prev.special_discount_prices || []), { price: '', charge_name: 'Processing Fees', from_date: '', to_date: '' }] }))}
+                                            className="text-xs px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors">
+                                            + Add Discount
+                                        </button>
+                                    </div>
+                                    {(bankData.special_discount_prices || []).map((discount, index) => (
+                                        <div key={index} className="grid grid-cols-1 md:grid-cols-5 gap-3 p-3 bg-blue-50 rounded mb-3 relative">
+                                            <div className="flex-1">
+                                                <label className="block text-xs font-medium text-blue-700 mb-1">Charge Type</label>
+                                                <select
+                                                    value={discount.charge_name}
+                                                    onChange={(e) => {
+                                                        const newDiscounts = [...bankData.special_discount_prices];
+                                                        newDiscounts[index].charge_name = e.target.value;
+                                                        setBankData({ ...bankData, special_discount_prices: newDiscounts });
+                                                    }}
+                                                    className="block w-full px-2 py-1.5 border border-blue-300 rounded text-xs bg-white focus:ring-1 focus:ring-blue-500"
+                                                >
+                                                    <option value="Processing Fees">Processing Fees</option>
+                                                    <option value="Login Fees">Login Fees</option>
+                                                    <option value="Legal Charges">Legal Charges</option>
+                                                    <option value="Valuation Charges">Valuation Charges</option>
+                                                </select>
+                                            </div>
+                                            <Inp label="Price (₹)" value={discount.price} path={`special_discount_prices.${index}.price`} type="number" onChange={handleChange} />
+                                            <Inp label="From Date" value={discount.from_date ? discount.from_date.split('T')[0] : ''} path={`special_discount_prices.${index}.from_date`} type="date" onChange={handleChange} />
+                                            <Inp label="To Date" value={discount.to_date ? discount.to_date.split('T')[0] : ''} path={`special_discount_prices.${index}.to_date`} type="date" onChange={handleChange} />
+                                            <div className="flex items-end mb-4">
+                                                <button type="button" onClick={() => setBankData(prev => ({ ...prev, special_discount_prices: prev.special_discount_prices.filter((_, i) => i !== index) }))}
+                                                    className="text-red-500 hover:text-red-700 text-xs font-medium">
+                                                    Remove
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ))}
                                 </div>
                             </SectionDropdown>
 
@@ -616,9 +684,9 @@ const UpdateBank = () => {
                                                                 </svg>
                                                             </button>
                                                             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                                                                <Inp label="Income Range" value={slab.income_range} path={`policy.salaried.foir_slabs.${index}.income_range`} type="number" onChange={handleChange} />
-                                                                <Inp label="FOIR Gross %" value={slab.foir_gross} path={`policy.salaried.foir_slabs.${index}.foir_gross`} type="number" onChange={handleChange} />
-                                                                <Inp label="FOIR Net %" value={slab.foir_net} path={`policy.salaried.foir_slabs.${index}.foir_net`} type="number" onChange={handleChange} />
+                                                                <Inp label="From (₹)" value={slab.from} path={`policy.salaried.foir_slabs.${index}.from`} type="number" onChange={handleChange} />
+                                                                <Inp label="To (₹)" value={slab.to} path={`policy.salaried.foir_slabs.${index}.to`} type="number" onChange={handleChange} />
+                                                                <Inp label="Net %" value={slab.foir_net} path={`policy.salaried.foir_slabs.${index}.foir_net`} type="number" onChange={handleChange} />
                                                             </div>
                                                         </div>
                                                     ))}
@@ -667,12 +735,30 @@ const UpdateBank = () => {
                                                         )}
                                                     </div>
 
-                                                    {/* RTR Surrogate */}
                                                     <div className="p-3 bg-white rounded border border-gray-200">
                                                         <Chk label="RTR Surrogate" value={se.rtr_surrogate} path="policy.self_employed.rtr_surrogate" onChange={handleChange} />
                                                         {se.rtr_surrogate && (
                                                             <div className="ml-4 mt-2 p-3 bg-blue-50 rounded">
-                                                                <Inp label="RTR Surrogate Ratio (%)" value={se.rtr_surrogate_ratio} path="policy.self_employed.rtr_surrogate_ratio" type="number" onChange={handleChange} />
+                                                                <div className="flex items-center justify-between mb-2">
+                                                                    <label className="text-sm font-semibold text-blue-700">RTR Details</label>
+                                                                    <button type="button"
+                                                                        onClick={() => setBankData(p => ({ ...p, policy: { ...p.policy, self_employed: { ...p.policy.self_employed, rtr_surrogate_details: [...(p.policy.self_employed.rtr_surrogate_details || []), { emi_cleared: 0, multiple: 0 }] } } }))}
+                                                                        className="text-[10px] px-2 py-0.5 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors">
+                                                                        + Add Pair
+                                                                    </button>
+                                                                </div>
+                                                                {(se.rtr_surrogate_details || []).map((pair, index) => (
+                                                                    <div key={index} className="flex items-center space-x-2 bg-white p-2 rounded mb-2 border border-blue-100">
+                                                                        <div className="flex-1 grid grid-cols-2 gap-2">
+                                                                            <Inp label="EMI Cleared" value={pair.emi_cleared} path={`policy.self_employed.rtr_surrogate_details.${index}.emi_cleared`} type="number" onChange={handleChange} />
+                                                                            <Inp label="Multiple" value={pair.multiple} path={`policy.self_employed.rtr_surrogate_details.${index}.multiple`} type="number" onChange={handleChange} />
+                                                                        </div>
+                                                                        <button type="button" onClick={() => setBankData(p => ({ ...p, policy: { ...p.policy, self_employed: { ...p.policy.self_employed, rtr_surrogate_details: p.policy.self_employed.rtr_surrogate_details.filter((_, i) => i !== index) } } }))}
+                                                                            className="text-red-500 hover:text-red-700">
+                                                                            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" /></svg>
+                                                                        </button>
+                                                                    </div>
+                                                                ))}
                                                             </div>
                                                         )}
                                                     </div>
@@ -755,9 +841,9 @@ const UpdateBank = () => {
                                                                             </svg>
                                                                         </button>
                                                                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                                                                            <Inp label="Income Range" value={slab.income_range} path={`policy.self_employed.se_foir_slabs.${index}.income_range`} type="number" onChange={handleChange} />
-                                                                            <Inp label="FOIR Gross %" value={slab.foir_gross} path={`policy.self_employed.se_foir_slabs.${index}.foir_gross`} type="number" onChange={handleChange} />
-                                                                            <Inp label="FOIR Net %" value={slab.foir_net} path={`policy.self_employed.se_foir_slabs.${index}.foir_net`} type="number" onChange={handleChange} />
+                                                                            <Inp label="From (₹)" value={slab.from} path={`policy.self_employed.se_foir_slabs.${index}.from`} type="number" onChange={handleChange} />
+                                                                            <Inp label="To (₹)" value={slab.to} path={`policy.self_employed.se_foir_slabs.${index}.to`} type="number" onChange={handleChange} />
+                                                                            <Inp label="Net %" value={slab.foir_net} path={`policy.self_employed.se_foir_slabs.${index}.foir_net`} type="number" onChange={handleChange} />
                                                                         </div>
                                                                     </div>
                                                                 ))}

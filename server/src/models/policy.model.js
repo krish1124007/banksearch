@@ -2,8 +2,8 @@ import mongoose from "mongoose";
 
 // FOIR Slab Schema
 const FOIRSlabSchema = new mongoose.Schema({
-    income_range: { type: String }, // e.g., "Upto 30k"
-    foir_gross: { type: String },   // e.g., "40%"
+    from: { type: Number },
+    to: { type: Number },
     foir_net: { type: String }      // e.g., "50%"
 }, { _id: false });
 
@@ -72,7 +72,10 @@ const SelfEmployedPolicySchema = new mongoose.Schema({
         services: { type: Number, default: 0 }
     },
     rtr_surrogate: { type: Boolean, default: false },
-    rtr_surrogate_ratio: { type: Number, default: 0 },
+    rtr_surrogate_details: [{
+        emi_cleared: { type: Number },
+        multiple: { type: Number }
+    }],
     industry_margin_surrogate: { type: Boolean, default: false },
     industry_margin_surrogate_ratio: {
         from: { type: Number, default: 0 },

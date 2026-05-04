@@ -27,7 +27,7 @@ const Policy = ({ onChange, initialData }) => {
   const [isCibilEnabled, setIsCibilEnabled] = useState(false);
 
   const [salaried, setSalaried] = useState({
-    foir_slabs: [{ income_range: '', foir_gross: '', foir_net: '' }],
+    foir_slabs: [{ from: '', to: '', foir_net: '' }],
     cash_salary_accepted: false,
     additional_income: { rent: false, future_rental: false, incentive: false },
     company_type: { MNC: false, Govt: false, PvtLtd: false, LLP: false, Partnership: false, Trust: false, Individual: false },
@@ -40,7 +40,7 @@ const Policy = ({ onChange, initialData }) => {
     gst_surrogate: false,
     gst_surrogate_ratio: { trading: '', manufacturing: '', services: '' },
     rtr_surrogate: false,
-    rtr_surrogate_ratio: '',
+    rtr_surrogate_details: [{ emi_cleared: '', multiple: '' }],
     industry_margin_surrogate: false,
     industry_margin_surrogate_ratio: { from: '', to: '' },
     gross_profit_surrogate: false,
@@ -51,7 +51,7 @@ const Policy = ({ onChange, initialData }) => {
     low_ltv_ratio: '',
     low_ltv_max_amount: '',
     foir: false,
-    se_foir_slabs: [{ income_range: '', foir_gross: '', foir_net: '' }],
+    se_foir_slabs: [{ from: '', to: '', foir_net: '' }],
     combo: false,
     abb_required: false,
     abb_ratio: '',
@@ -142,7 +142,7 @@ const Policy = ({ onChange, initialData }) => {
   const addFoirSlab = () => {
     setSalaried(prev => ({
       ...prev,
-      foir_slabs: [...prev.foir_slabs, { income_range: '', foir_gross: '', foir_net: '' }]
+      foir_slabs: [...prev.foir_slabs, { from: '', to: '', foir_net: '' }]
     }));
   };
 
@@ -222,9 +222,9 @@ const Policy = ({ onChange, initialData }) => {
                   {salaried.foir_slabs.map((slab, index) => (
                     <div key={index} className="flex items-center space-x-3 p-4 bg-white rounded-lg border border-gray-200">
                       <div className="flex-1 grid grid-cols-3 gap-3">
-                        <CleanNumberInput value={slab.income_range} onChange={(v) => handleFoirSlabChange(index, 'income_range', v)} className="px-3 py-2 border rounded-lg text-sm w-full" placeholder="Income Range" />
-                        <CleanNumberInput value={slab.foir_gross} onChange={(v) => handleFoirSlabChange(index, 'foir_gross', v)} className="px-3 py-2 border rounded-lg text-sm w-full" placeholder="FOIR Gross %" />
-                        <CleanNumberInput value={slab.foir_net} onChange={(v) => handleFoirSlabChange(index, 'foir_net', v)} className="px-3 py-2 border rounded-lg text-sm w-full" placeholder="FOIR Net %" />
+                        <CleanNumberInput value={slab.from} onChange={(v) => handleFoirSlabChange(index, 'from', v)} className="px-3 py-2 border rounded-lg text-sm w-full" placeholder="From" />
+                        <CleanNumberInput value={slab.to} onChange={(v) => handleFoirSlabChange(index, 'to', v)} className="px-3 py-2 border rounded-lg text-sm w-full" placeholder="To" />
+                        <CleanNumberInput value={slab.foir_net} onChange={(v) => handleFoirSlabChange(index, 'foir_net', v)} className="px-3 py-2 border rounded-lg text-sm w-full" placeholder="Net %" />
                       </div>
                       {salaried.foir_slabs.length > 1 && (
                         <button type="button" onClick={() => removeFoirSlab(index)} className="p-2 text-red-500 hover:bg-red-50 rounded-lg">
@@ -345,12 +345,39 @@ const Policy = ({ onChange, initialData }) => {
 
                   {/* RTR Surrogate */}
                   <SurrogateBlock field="rtr_surrogate" label="RTR Surrogate" color="orange" selfEmployed={selfEmployed} onSEChange={handleSEChange}>
-                    <div className="ml-4 mt-2 max-w-xs relative">
-                      <label className="block text-sm text-orange-700 mb-1">RTR Surrogate Ratio (%)</label>
-                      <CleanNumberInput value={selfEmployed.rtr_surrogate_ratio || 0}
-                        onChange={(v) => handleSEChange('rtr_surrogate_ratio', v)}
-                        className="w-full px-3 py-2 border-2 border-orange-200 rounded-lg text-sm pr-7" placeholder="%" />
-                      <span className="absolute right-3 bottom-2 text-orange-600 text-sm">%</span>
+                    <div className="ml-4 mt-3 space-y-3">
+                      <div className="flex items-center justify-between">
+                        <label className="text-sm font-semibold text-orange-800">RTR Details</label>
+                        <button type="button"
+                          onClick={() => handleSEChange('rtr_surrogate_details', [...(selfEmployed.rtr_surrogate_details || []), { emi_cleared: '', multiple: '' }])}
+                          className="text-xs px-2 py-1 bg-orange-500 text-white rounded hover:bg-orange-600 transition-colors">
+                          + Add Pair
+                        </button>
+                      </div>
+                      {(selfEmployed.rtr_surrogate_details || []).map((pair, index) => (
+                        <div key={index} className="flex items-center space-x-2 bg-white p-2 rounded border border-orange-200">
+                          <div className="flex-1 grid grid-cols-2 gap-2">
+                            <div>
+                              <label className="block text-[10px] text-orange-700 uppercase">EMI Cleared</label>
+                              <CleanNumberInput value={pair.emi_cleared}
+                                onChange={(v) => handleSEChange('rtr_surrogate_details', selfEmployed.rtr_surrogate_details.map((p, i) => i === index ? { ...p, emi_cleared: v } : p))}
+                                className="w-full px-2 py-1 border border-orange-200 rounded text-xs" placeholder="EMI Count" />
+                            </div>
+                            <div>
+                              <label className="block text-[10px] text-orange-700 uppercase">Multiple</label>
+                              <CleanNumberInput value={pair.multiple}
+                                onChange={(v) => handleSEChange('rtr_surrogate_details', selfEmployed.rtr_surrogate_details.map((p, i) => i === index ? { ...p, multiple: v } : p))}
+                                className="w-full px-2 py-1 border border-orange-200 rounded text-xs" placeholder="Multiplier" />
+                            </div>
+                          </div>
+                          {selfEmployed.rtr_surrogate_details.length > 1 && (
+                            <button type="button" onClick={() => handleSEChange('rtr_surrogate_details', selfEmployed.rtr_surrogate_details.filter((_, i) => i !== index))}
+                              className="text-red-500 hover:text-red-700">
+                              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" /></svg>
+                            </button>
+                          )}
+                        </div>
+                      ))}
                     </div>
                   </SurrogateBlock>
 
@@ -459,19 +486,19 @@ const Policy = ({ onChange, initialData }) => {
                             </div>
                             <div className="grid grid-cols-3 gap-2">
                               <div>
-                                <label className="block text-xs text-amber-700 mb-1">Income Range (₹)</label>
-                                <CleanNumberInput value={slab.income_range}
-                                  onChange={(v) => handleSEChange('se_foir_slabs', selfEmployed.se_foir_slabs.map((s, i) => i === index ? { ...s, income_range: v } : s))}
-                                  className="w-full px-2 py-1.5 border border-amber-200 rounded text-xs" placeholder="Income" />
+                                <label className="block text-xs text-amber-700 mb-1">From (₹)</label>
+                                <CleanNumberInput value={slab.from}
+                                  onChange={(v) => handleSEChange('se_foir_slabs', selfEmployed.se_foir_slabs.map((s, i) => i === index ? { ...s, from: v } : s))}
+                                  className="w-full px-2 py-1.5 border border-amber-200 rounded text-xs" placeholder="From" />
                               </div>
                               <div>
-                                <label className="block text-xs text-amber-700 mb-1">FOIR Gross (%)</label>
-                                <CleanNumberInput value={slab.foir_gross}
-                                  onChange={(v) => handleSEChange('se_foir_slabs', selfEmployed.se_foir_slabs.map((s, i) => i === index ? { ...s, foir_gross: v } : s))}
-                                  className="w-full px-2 py-1.5 border border-amber-200 rounded text-xs" placeholder="%" />
+                                <label className="block text-xs text-amber-700 mb-1">To (₹)</label>
+                                <CleanNumberInput value={slab.to}
+                                  onChange={(v) => handleSEChange('se_foir_slabs', selfEmployed.se_foir_slabs.map((s, i) => i === index ? { ...s, to: v } : s))}
+                                  className="w-full px-2 py-1.5 border border-amber-200 rounded text-xs" placeholder="To" />
                               </div>
                               <div>
-                                <label className="block text-xs text-amber-700 mb-1">FOIR Net (%)</label>
+                                <label className="block text-xs text-amber-700 mb-1">Net (%)</label>
                                 <CleanNumberInput value={slab.foir_net}
                                   onChange={(v) => handleSEChange('se_foir_slabs', selfEmployed.se_foir_slabs.map((s, i) => i === index ? { ...s, foir_net: v } : s))}
                                   className="w-full px-2 py-1.5 border border-amber-200 rounded text-xs" placeholder="%" />
